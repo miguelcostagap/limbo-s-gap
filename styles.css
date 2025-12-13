@@ -1,0 +1,412 @@
+:root {
+  --bg-color: #1f2124;
+
+  --bar-bg: rgba(0, 0, 0, 0.6);
+  --bar-border-color: #b0b4bc;
+  --button-bg: #ced3d6;
+  --button-text-color: #111111;
+  --input-text-color: #ffffff;
+
+  --theme-toggle-ring: #b0b4bc;
+  --theme-toggle-inner: #f5f5f7;
+
+  /* FALTAVA: */
+  --panel-bg: rgba(0, 0, 0, 0.04);
+  --panel-border: rgba(0, 0, 0, 0.08);
+}
+
+body.theme-gray {
+  --bg-color: #2b2e32;
+  --bar-bg: rgba(25, 27, 30, 0.9);
+  --bar-bg-input: rgba(25, 27, 30, 0.2);
+  --bar-border-color: #c3c7cf;
+  --button-bg: #d7dde2;
+  --button-text-color: #141518;
+  --input-text-color: #ffffff;
+  --theme-toggle-ring: #c3c7cf;
+  --theme-toggle-inner: #f5f5f7;
+
+  /* painel no tema cinza */
+  --panel-bg: rgba(0, 0, 0, 0.24);
+  --panel-border: rgba(0, 0, 0, 0.4);
+}
+
+body.theme-white {
+  --bg-color: #f5f5f7;
+  --bar-bg: rgba(255, 255, 255, 0.8);
+  --bar-bg-input: rgba(255, 255, 255, 0.2);
+  --bar-border-color: #c0c4cc;
+  --button-bg: #2b2e32;
+  --button-text-color: #ffffff;
+  --input-text-color: #111111;
+  --theme-toggle-ring: #c0c4cc;
+  --theme-toggle-inner: #2b2e32;
+
+  /* painel no tema claro */
+  --panel-bg: rgba(255, 255, 255, 0.92);
+  --panel-border: rgba(0, 0, 0, 0.12);
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: var(--bg-color);
+  color: #000000;
+}
+
+
+/* painel de controlo passa a usar as variáveis */
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+#rootAppContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#threeCanvasContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+canvas {
+  display: block;
+}
+#promptBarWrapper {
+  position: absolute;
+  left: 50%;
+  bottom: 3vh;
+  transform: translateX(-50%);
+  width: 30vw;
+  max-width: 900px;
+  min-width: 260px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#controlBarContainer,
+#promptBarContainer {
+  width: 100%;
+}
+
+/* barras com aro fino (Apple-ish) */
+#promptBarInner,
+#controlBarInner {
+  background: var(--bar-bg-input);
+  border-radius: 999px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid var(--bar-border-color);  /* 👈 borda fina de 5px */
+}
+
+/* layout: input ocupa o resto, botão do lado */
+#promptBarInner {
+  justify-content: space-between;
+}
+
+/* layout do controlo: botões em linha */
+#controlBarInner {
+  justify-content: flex-start;
+}
+
+#promptSendButton,
+.controlButton {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--button-bg);
+  color: var(--button-text-color);
+  white-space: nowrap;
+  transition: transform 0.12s ease-out, filter 0.12s ease-out,
+    box-shadow 0.12s ease-out;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+#promptSendButton:hover,
+.controlButton:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+/* Ícones quando a barra está escondida:
+   sem fundo, sem borda, só a imagem visível */
+.barToggleIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.barToggleIcon img {
+  height: 40px;
+  width: auto;
+}
+.barToggleIcon img:hover {
+  opacity: 1;
+  transform: scale(0.9);  /* fica um bocadinho mais pequeno no hover */
+}
+/* botão estilo Apple: branco com aro fino */
+
+.hidden {
+  display: none !important;
+}
+#promptTextInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 8px 10px;
+  font-size: 14px;
+  outline: none;
+  color: var(--input-text-color);   /* 👈 só a cor muda por tema */
+}
+
+/* Overlay para conteúdo no centro */
+#centerContentOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+  font-size: 16px;
+  color: #000;
+  text-align: center;
+  padding: 16px;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+#centerContentOverlay.visible {
+  opacity: 1;
+}
+/* Overlay para conteúdo no centro */
+#imageShadow {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;                 /* acima da esfera, abaixo do painel se quiseres */
+  opacity: 0;                 /* começa invisível */
+  transition: opacity 0.4s ease-out; /* só para suavizar o fade */
+}
+
+#imageShadow.visible {
+  opacity: 1;
+}
+
+#imageShadow img {
+  width: 66vh;
+  height: auto;
+  aspect-ratio: 1/1;
+  transform-origin: center center;
+  transform: scale(0);        /* começa a 0, cresce via JS */
+}
+
+/* Painel de controlo */
+#controlPanel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  background: var(--panel-bg);
+  border-radius: 12px;
+  padding: 10px 12px;
+  max-width: 260px;
+  font-size: 11px;
+  color: #111827;
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(6px);
+}
+
+#controlPanel h2 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+
+.control-section {
+  margin-bottom: 8px;
+}
+
+.control-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  margin: 4px 0;
+  opacity: 0.65;
+}
+
+.control-row {
+  margin-bottom: 6px;
+}
+
+.control-row label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.control-row span {
+  font-size: 10px;
+}
+
+.control-row .value {
+  margin-left: 8px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+.control-row input[type="range"] {
+  width: 100%;
+}
+/* override do botão normal */
+.themeToggleButton {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  border: 2px solid var(--theme-toggle-ring);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* círculo interior que mostra a cor do tema contrário */
+.themeToggleButton::before {
+  content: "";
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: var(--theme-toggle-inner);
+  display: block;
+}
+
+.themeToggleButton:hover {
+  transform: scale(0.95);
+  filter: none;
+}
+/* barras com aro etc, já tinhas */
+
+/* controlo: botões lado a lado */
+#controlBarInner {
+  justify-content: center;
+  flex-wrap: nowrap;  /* ou wrap se quiseres */
+}
+
+
+#promptSendButton {
+  flex: 0 0 auto;   /* não cresce, fica só do tamanho do conteúdo */
+}
+/* O botão de tema NÃO deve expandir como os outros */
+.themeToggleButton {
+  flex: 0 0 auto;                 /* não expande, não encolhe */
+  width: 32px;                    /* LADO = 32px */
+  height: 32px;                   /* ALTURA = 32px */
+  aspect-ratio: 1 / 1;            /* garante círculo mesmo se ao layout der tilt */
+  
+  padding: 0 !important;          /* remove qualquer interior */
+  box-sizing: border-box;         /* borda incluída no tamanho */
+  border-radius: 50%;             /* transforma num círculo */
+  
+  border: 3px solid var(--theme-toggle-ring);
+  background: transparent;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Círculo interno */
+.themeToggleButton::before {
+  content: "";
+  width: 70%;
+  height: 70%;
+  aspect-ratio: 1 / 1;            /* garante círculo também */
+  border-radius: 50%;
+  background: var(--theme-toggle-inner);
+  display: block;
+}
+
+/* Animação suave ao hover */
+.themeToggleButton:hover {
+  transform: scale(0.88);
+}
+/* Overlay para conteúdo no centro */
+#imageShadow {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+#imageShadow.visible {
+  opacity: 1;
+}
+
+#imageShadow img {
+  width: 66vh;
+  height: auto;
+  aspect-ratio: 1/1;
+  transform-origin: center center;
+  transform: scale(0);
+}
+
+/* NOVO: vídeo com o mesmo “slot” da imagem */
+#videoShadow {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4; /* um pouco acima da imagem, se as duas coexistirem */
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+#videoShadow.visible {
+  opacity: 1;
+}
+
+#videoShadow video {
+  width: 66vh;      /* igual à imagem */
+  height: auto;
+  aspect-ratio: 1/1;
+  transform-origin: center center;
+  /* se quiseres, podes aplicar scale aqui via JS no futuro */
+}

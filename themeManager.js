@@ -1,0 +1,107 @@
+// themeManager.js
+import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
+
+// basic config + images  mapping
+const THEME_CONFIG = {
+  gray: {
+    name: "gray",
+    bodyClass: "theme-gray",
+    sceneBg: 0x393b3d,
+    dotColor: "#ced3d6",
+
+    icons: {
+      keyboard: "iconBrancoTeclado.png",
+      control: "iconBrancoControl.png"
+
+    },
+
+    shadowImage: "shadowSphereWhite.png"
+  },
+
+  white: {
+    name: "white",
+    bodyClass: "theme-white",
+    sceneBg: 0xffffff,
+    dotColor: "#444444",
+
+    icons: {
+      keyboard: "iconCinzaTeclado.png",
+      control: "iconCinzaControl.png"
+    },
+
+    shadowImage: "shadowSphereCinza.png"
+  }
+};
+
+// list of elements to apply theme !!!
+const THEMED_ELEMENTS = [
+  "promptBarInner",
+  "controlBarInner",
+  "controlPanel",
+  "centerContentOverlay"
+];
+
+// make it pretty :)
+export function initThemeManager({ scene, sphere }) {
+
+  const keyboardIcon = document.getElementById("promptBarIconImage");
+  const controlIcon = document.getElementById("controlBarIconImage");
+  const shadowImage = document.getElementById("imageShadowImage");
+
+  let currentTheme = "gray";
+
+  function applyTheme(name) {
+    const cfg = THEME_CONFIG[name];
+    if (!cfg) return;
+    currentTheme = name;
+
+    // 1) classes no body → CSS variables e estilos dependentes do tema
+    document.body.classList.remove(
+      THEME_CONFIG.gray.bodyClass,
+      THEME_CONFIG.white.bodyClass
+    );
+    document.body.classList.add(cfg.bodyClass);
+
+    // 2) fundo da cena
+    if (scene) {
+      scene.background = new THREE.Color(cfg.sceneBg);
+    }
+
+    // 3) cor dos pontos da sphere
+    if (sphere && sphere.setDotColor) {
+      sphere.setDotColor(cfg.dotColor);
+    }
+
+    // 4) ícones
+    if (keyboardIcon) {
+      keyboardIcon.src = cfg.icons.keyboard;
+    }
+    if (controlIcon) {
+      controlIcon.src = cfg.icons.control;
+    }
+
+    // 5) imagem do portal
+    if (shadowImage) {
+      shadowImage.src = cfg.shadowImage;
+    }
+
+    // 6) marcar elementos como is-theme-gray / is-theme-white
+    THEMED_ELEMENTS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove("is-theme-gray", "is-theme-white");
+      el.classList.add(`is-theme-${name}`);
+    });
+  }
+
+  function toggleTheme() {
+    applyTheme(currentTheme === "gray" ? "white" : "gray");
+  }
+
+  function getCurrentTheme() {
+    return currentTheme;
+  }
+
+  return { applyTheme, toggleTheme, getCurrentTheme };
+  
+}
