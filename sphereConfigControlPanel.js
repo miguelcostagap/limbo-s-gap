@@ -77,8 +77,8 @@ export const SPHERE_CONFIG = {
   dialogWaveSpeed1: 0.45,
   dialogWaveSpeed2: 0.18,
   dialogNoiseAmount: 0.7,
-    dialogRingInnerAngle: 0.10,  // interior do anel (zona central calma)
-  dialogRingOuterAngle: 0.60
+    dialogRingInnerAngle: 0.95,  // interior do anel (zona central calma)
+  dialogRingOuterAngle: 1.52
 };
 
 export function initSphereConfigPanel() {
