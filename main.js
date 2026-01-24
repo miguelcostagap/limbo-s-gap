@@ -86,6 +86,13 @@ function showPromptBar() {
   promptBarIcon.classList.add("hidden");
 }
 
+function hideAllBars(){
+  promptBarIcon.classList.add("hidden");
+  controlBarInner.classList.add("hidden");
+  promptBarInner.classList.add("hidden");
+  controlBarIcon.classList.add("hidden");
+}
+
 // initital sate: quick actions bar visible, keyboard input hidden
 showControlBar();
 

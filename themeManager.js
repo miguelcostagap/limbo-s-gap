@@ -55,24 +55,24 @@ export function initThemeManager({ scene, sphere }) {
     if (!cfg) return;
     currentTheme = name;
 
-    // 1) classes no body → CSS variables e estilos dependentes do tema
+    // 1) classes in body ---> CSS variables and dependencies fo the theme
     document.body.classList.remove(
       THEME_CONFIG.gray.bodyClass,
       THEME_CONFIG.white.bodyClass
     );
     document.body.classList.add(cfg.bodyClass);
 
-    // 2) fundo da cena
+    // 2) scene background
     if (scene) {
       scene.background = new THREE.Color(cfg.sceneBg);
     }
 
-    // 3) cor dos pontos da sphere
+    // 3) shpere's dot's colors
     if (sphere && sphere.setDotColor) {
       sphere.setDotColor(cfg.dotColor);
     }
 
-    // 4) ícones
+    // 4) icons
     if (keyboardIcon) {
       keyboardIcon.src = cfg.icons.keyboard;
     }
@@ -80,12 +80,12 @@ export function initThemeManager({ scene, sphere }) {
       controlIcon.src = cfg.icons.control;
     }
 
-    // 5) imagem do portal
+    // 5) portal's img
     if (shadowImage) {
       shadowImage.src = cfg.shadowImage;
     }
 
-    // 6) marcar elementos como is-theme-gray / is-theme-white
+    // 6) mark elements is-theme-gray / is-theme-white
     THEMED_ELEMENTS.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
