@@ -1,0 +1,40 @@
+=========================
+======= To Do List ======
+=========================
+
+---> Features and bugs to solve/implement
+
+=======   Videos  =======
+
+--->
+
+======  Interface  ======
+
+--->    more graphic interaction with UI
+--->    change icons
+
+===== Sphere Mode 0 =====
+
+--->    refine movement
+--->    refine in/out / more smooth
+--->    more noise, less 'edgy'
+--->    change to 0 min-heigth
+--->    refine cones
+
+===== Sphere Mode 1 =====
+
+--->    refine general spikes, more spikes with more noise / more abstract
+--->    remove circle inside???
+--->    remove background circle img
+--->    change response text font color with theme
+--->    fix in/out timings related to characters.lenght/seconds
+
+======= AI version ======
+
+--->    All
+--->
+--->
+--->
+
+
+

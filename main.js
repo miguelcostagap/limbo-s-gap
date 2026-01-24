@@ -37,7 +37,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 rootContainer.appendChild(renderer.domElement);
 
-// lights - not used at the moment
+// lights - (not used at the moment, wasn't looking good...)
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
 scene.add(ambientLight);
 
@@ -54,10 +54,10 @@ const themeManager = initThemeManager({
   sphere: magneticSphere
 });
 
-// aplicar tema inicial
+// aply initial theme
 themeManager.applyTheme("gray");
 
-// ---------- UI: toggle entre barras (controlo / teclado) ----------
+// ---------- UI: toggle (quicl actions / keyboard input) ----------
 
 const controlBarInner = document.getElementById("controlBarInner");
 const controlBarIcon = document.getElementById("controlBarIcon");
@@ -69,7 +69,7 @@ const promptBarIconImage = document.getElementById("promptBarIconImage");
 
 const themeToggleButton = document.getElementById("themeToggleButton");
 
-// funções para mostrar/ocultar barras
+// funcions to show or hide bars
 function showControlBar() {
   controlBarInner.classList.remove("hidden");
   controlBarIcon.classList.add("hidden");
@@ -86,10 +86,10 @@ function showPromptBar() {
   promptBarIcon.classList.add("hidden");
 }
 
-// estado inicial: barra de controlo ativa, teclado escondido
+// initital sate: quick actions bar visible, keyboard input hidden
 showControlBar();
 
-// listeners dos ícones
+// icons listeners
 promptBarIcon.addEventListener("click", () => {
   showPromptBar();
 });
@@ -98,14 +98,14 @@ controlBarIcon.addEventListener("click", () => {
   showControlBar();
 });
 
-// click no botão de toggle de tema
+// theme toggle button
 if (themeToggleButton) {
   themeToggleButton.addEventListener("click", () => {
     themeManager.toggleTheme();
   });
 }
 
-// estado do rato
+// mouse's postition tracker
 let lastMouseNDC = { x: 0, y: 0 };
 
 initUserInterface(
@@ -122,7 +122,7 @@ initUserInterface(
 const promptController = initPromptControl(() => ({ ...lastMouseNDC }));
 const imageShadowController = initImageShadowControl();
 
-// Control bar → vídeos + magnet forte
+// Control bar → videos + magnet 
 initControlBarVideos({
   onTriggerPrompt: (label) => {
     if (
@@ -135,7 +135,7 @@ initControlBarVideos({
   config: VIDEO_PORTAL_CONFIG
 });
 
-// Input de texto → dialog / virtual Miguel (static suave)
+// text input 
 initDialogLogic({
   onStartDialog: (answer, durationMs) => {
     if (
@@ -147,7 +147,7 @@ initDialogLogic({
   }
 });
 
-// painel de controlo
+// control panel (config in dev only)
 initSphereConfigPanel();
 
 // loop
@@ -167,20 +167,20 @@ imageShadowController.update(
   timestampMs,
   promptState.hollowFactor,
   promptState.phase,
-  promptState.dialogMode    // 👈 TRUE quando é animação do text input
+  promptState.dialogMode    // TRUE when manual text input!!!!!!!!!!!!
 );
 
 
 
-  // decidir qual posição de rato usar (real ou virtual)
+  // switch between live mouse tracking or random
   let mouseForSphere = lastMouseNDC;
   if (promptState.virtualMouseNDC) {
     mouseForSphere = promptState.virtualMouseNDC;
   }
   magneticSphere.setMouseNDC(mouseForSphere.x, mouseForSphere.y);
 
-  // magnet ligado em idle + transition, desligado em hollow
-  // MAS no modo diálogo queremos o magnet sempre desligado
+  // magnet on for idle + transition, shutodown on hollow
+  // in dialog mode  mganet is always off
   const enableMagnet =
     !promptState.dialogMode &&
     (promptState.phase === "idle" ||

@@ -3,28 +3,23 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>the gap in the limbo</title>
+  <title>limbo's gap</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 
-<body class="theme-gray"> <!-- **(init is in js, to switch change there)** -->
+<body class="theme-gray"> <!-- **(init is in js, to switch theme change there)** -->
   <div id="rootAppContainer">
 
-
     <!-- ───────────────────────────────────────────────
-                       AI 3D SPHERE :D
+                       COOL AI 3D SPHERE :D
     ─────────────────────────────────────────────── -->
     <div id="threeCanvasContainer"></div>
 
     <!-- CONTROL PANEL (sliders etc, to hide) -->
     <div id="controlPanel"></div>
+    <!--─────────────────────────────────────────────── -->
 
-    <!-- ───────────────────────────────────────────────
-             TEXTO NO CENTRO DURANTE PROMPTS 
-    ─────────────────────────────────────────────── -->
-    <div id="centerContentOverlay">
-      <div id="centerContentText"></div>
-    </div>
+
 
     <!-- ───────────────────────────────────────────────
             Background of special prompt content
@@ -32,10 +27,12 @@
     <div id="imageShadow">
       <img id="imageShadowImage" src="shadowSphereWhite.png" />
     </div>
+    <!--─────────────────────────────────────────────── -->
+
+
 
     <!-- ───────────────────────────────────────────────
          UI PROMPT LAYER + CONTROL BAR
-         Ambas dentro do wrapper para alternância
     ─────────────────────────────────────────────── -->
     <div id="promptBarWrapper">
 
@@ -44,10 +41,10 @@
       =============== -->
       <div id="controlBarContainer">
 
-        <!-- BARRA REAL -->
+        <!-- REAL BAR -->
         <div id="controlBarInner">
 
-          <!-- Botões ações rápidas - animação especial  -->
+          <!-- QUICK ACTIONS -->
           <button style="cursor: pointer" class="controlButton">me</button>
           <button style="cursor: pointer" class="controlButton">my work</button>
           <button style="cursor: pointer" class="controlButton">classic cv</button>
@@ -55,45 +52,61 @@
           <button style="cursor: not-allowed" class="controlButton">in dev... 🔒</button>
 
 
-          <!-- BOTÃO TROCAR TEMA -->
+          <!-- TOGLLE THEME -->
           <button id="themeToggleButton" class="controlButton themeToggleButton" aria-label="Toggle Theme"></button>
 
         </div>
 
-        <!-- QUANDO BAR HIDDEN → MOSTRAR APENAS ICON -->
+        <!-- WHEN HIDDEN SHOW ICON -->
         <div id="controlBarIcon" class="barToggleIcon hidden">
           <img id="controlBarIconImage" src="iconBrancoControl.png" style="cursor: pointer" alt="Mostrar controlo" />
         </div>
       </div>
-
+      <!-- =============================== -->
 
       <!-- ==============================
            BOTTOM: PROMPT INPUT BAR
       =============================== -->
       <div id="promptBarContainer">
 
-        <!-- BARRA DE INPUT -->
+        <!--  INPUT BAR -->
         <div id="promptBarInner">
           <input id="promptTextInput" type="text" placeholder="Still curious? Try chatting with me :)" />
           <button id="promptSendButton">Send</button>
         </div>
 
-        <!-- QUANDO HIDDEN → MOSTRAR APENAS ICON -->
+        <!-- WHEN HIDDEN SHOW JUST ICON -->
         <div id="promptBarIcon" class="barToggleIcon hidden">
-          <img id="promptBarIconImage" src="iconBrancoTeclado.png" style="cursor: pointer"  alt="Mostrar teclado" />
+          <img id="promptBarIconImage" src="iconBrancoTeclado.png" style="cursor: pointer" alt="Mostrar teclado" />
         </div>
       </div>
-
-
+      <!-- =============================== -->
     </div>
+    <!--─────────────────────────────────────────────── -->
 
-    <!-- VIDEO PORTAL (igual à imageShadow mas com <video>) -->
+
+
+    <!-- ───────────────────────────────────────────────
+                      VIDEO/ANIMATIONS PORTAL 
+    ─────────────────────────────────────────────── -->
     <div id="videoShadow">
       <video id="videoShadowVideo" playsinline muted></video>
     </div>
+    <!--─────────────────────────────────────────────── -->
 
-  </div>
 
+
+    <!-- ───────────────────────────────────────────────
+            TEXT IN CENTER FOR RESPONSE PROMPTS
+    ─────────────────────────────────────────────── -->
+    <div id="centerContentOverlay">
+      <div id="centerContentText"></div>
+    </div>
+    <!--─────────────────────────────────────────────── -->
+
+
+    
+  </div><!-- END id="rootAppContainer" -->
 
   <!-- MAIN APPLICATION -->
   <script type="module" src="./main.js"></script>
