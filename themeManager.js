@@ -19,7 +19,7 @@ const THEME_CONFIG = {
     apertureColor: "#a0aa17",
     apertureGradA: "#44444462",
     apertureGradB: "#ced3d669",
-    centerTextColor: "#15af15"
+    centerTextColor: "#ced3d6"
   },
 
   white: {
@@ -37,7 +37,7 @@ const THEME_CONFIG = {
     apertureColor: "#2323aa",
     apertureGradA: "#ced3d669",
     apertureGradB: "#4444447e",
-    centerTextColor: "#ced3d6"
+    centerTextColor: "#444444"
   }
 };
 
