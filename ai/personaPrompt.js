@@ -1,7 +1,7 @@
 // ai/personaPrompt.js
 import { NEURAL_MAP } from "./neuralMap.js";
 
-export function buildSystemPrompt() {
+export function buildPersonaPrompt() {
   // Keep it concise to control token costs.
   // We include the neural map JSON so the model can map user input to node IDs.
   const mapJson = JSON.stringify(NEURAL_MAP);

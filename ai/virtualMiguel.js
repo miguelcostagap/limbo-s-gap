@@ -1,66 +1,53 @@
-// ai/virtualMiguel.js
 import { callChatCompletions } from "./gptClient.js";
-import { buildSystemPrompt } from "./personaPrompt.js";
+import { buildRouterPrompt } from "./routerPrompt.js";
+import { buildPersonaPrompt } from "./personaPrompt.js";
+import { getCatalog, getNodesByIds } from "./neuralMap.js";
 
-function safeArray(v) {
-  return Array.isArray(v) ? v : [];
-}
+export function createVirtualMiguel({ endpointUrl, model }) {
+  const history = [];
 
-export function createVirtualMiguel({ endpointUrl, model, warmupEnabled } = {}) {
-  const state = {
-    prepared: false,
-    messages: []
-  };
-
-  async function prepare() {
-    if (state.prepared) return;
-
-    state.messages.push({ role: "system", content: buildSystemPrompt() });
-
-    if (warmupEnabled) {
-      // Very small warm-up call: costs tokens, but reinforces the "session" feel.
-      // We do not keep the warm-up answer; we just prove the pipeline is alive.
-      try {
-        await callChatCompletions({
-          endpointUrl,
-          model,
-          messages: [...state.messages, { role: "user", content: "Return {\"answerSentences\":[\"READY\"]}." }],
-          response_format: { type: "json_object" }
-        });
-      } catch {
-        // Ignore warm-up errors; main calls will still be attempted.
-      }
-    }
-
-    state.prepared = true;
-  }
-
-  async function ask(userText) {
-    await prepare();
-
-    const content = String(userText || "").trim();
-    if (!content) {
-      return { mappedNodeIds: [], answerSentences: ["..."] };
-    }
-
-    state.messages.push({ role: "user", content });
-
-    const json = await callChatCompletions({
+  async function route(userText) {
+    const res = await callChatCompletions({
       endpointUrl,
       model,
-      messages: state.messages,
+      messages: [
+        { role: "system", content: buildRouterPrompt() },
+        { role: "user", content: JSON.stringify({ userPrompt: userText, nodes: getCatalog() }) }
+      ],
       response_format: { type: "json_object" }
     });
 
-    // Persist a compact assistant turn for coherence (not the raw JSON).
-    const assistantText = safeArray(json?.answerSentences).join(" ").trim() || "";
-    state.messages.push({ role: "assistant", content: assistantText });
-
-    return {
-      mappedNodeIds: safeArray(json?.mappedNodeIds),
-      answerSentences: safeArray(json?.answerSentences)
-    };
+    return Array.isArray(res.nodeIds) ? res.nodeIds : [];
   }
 
-  return { prepare, ask };
+  async function answer(userText, nodeIds) {
+    const selected = nodeIds.length ? getNodesByIds(nodeIds) : getNodesByIds(["identity.core"]);
+
+    const res = await callChatCompletions({
+      endpointUrl,
+      model,
+      messages: [
+        { role: "system", content: buildPersonaPrompt() },
+        ...history.slice(-8),
+        { role: "user", content: JSON.stringify({ userPrompt: userText, selectedNodes: selected }) }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    const text = Array.isArray(res.answerSentences)
+      ? res.answerSentences.join(" ")
+      : "";
+
+    history.push({ role: "user", content: userText });
+    history.push({ role: "assistant", content: text });
+
+    return res;
+  }
+
+  async function ask(userText) {
+    const ids = await route(userText);
+    return answer(userText, ids);
+  }
+
+  return { ask };
 }
