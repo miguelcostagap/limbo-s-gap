@@ -13,12 +13,8 @@ export function initDialogLogic({ onStartDialog, onAnimateDialog } = {}) {
 
   const vm = createVirtualMiguel({
     endpointUrl: CONFIG.gptProxyEndpoint,
-    model: CONFIG.gptModel,
-    warmupEnabled: CONFIG.gptWarmupEnabled
+    model: CONFIG.gptModel
   });
-
-  // kick warm-up ASAP (no UI impact)
-  vm.prepare();
 
   let isBusy = false;
 
