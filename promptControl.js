@@ -173,6 +173,8 @@ export function initPromptControl(getMouseNDC) {
   return {
     update,
     triggerPrompt,
-    triggerDialog
+    triggerDialog,
+      getDialogTextElement: () => overlayText
+
   };
 }
