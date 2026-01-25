@@ -14,6 +14,7 @@ import {
 import { initDialogLogic } from "./dialogLogic.js";
 import { initClassicCvAperturePortal } from "./classicCvAperture.js";
 import { createTextAnimator } from "./textAnimator.js";
+import { SPHERE_CONFIG as CONFIG } from "./sphereConfigControlPanel.js";
 
 
 // set up three-js
@@ -205,6 +206,7 @@ initDialogLogic({
     });
   }
 });
+
 
 
 // control panel (config in dev only)

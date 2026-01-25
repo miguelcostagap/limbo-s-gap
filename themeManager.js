@@ -19,7 +19,7 @@ const THEME_CONFIG = {
     apertureColor: "#a0aa17",
     apertureGradA: "#44444462",
     apertureGradB: "#ced3d669",
-    centerTextColor: "#af1515"
+    centerTextColor: "#15af15"
   },
 
   white: {
