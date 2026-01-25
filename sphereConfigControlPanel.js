@@ -17,7 +17,7 @@ dialogMinHoldMs: 1000,
 
 // Text animation
 dialogTypeDelayMs: 22,
-dialogDeleteDelayMs: 100,
+dialogDeleteDelayMs: 1,
 dialogSentenceHoldMs: 300,
 dialogBetweenSentenceMs: 1000,
 dialogCursorBlinkMs: 420,
