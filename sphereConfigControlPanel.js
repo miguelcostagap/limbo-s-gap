@@ -19,7 +19,7 @@ dialogMinHoldMs: 1000,
 dialogTypeDelayMs: 22,
 dialogDeleteDelayMs: 1,
 dialogSentenceHoldMs: 300,
-dialogBetweenSentenceMs: 1000,
+dialogBetweenSentenceMs: 3000,
 dialogCursorBlinkMs: 420,
 
   // tamanho da esfera
