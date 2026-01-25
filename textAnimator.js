@@ -14,15 +14,18 @@ function clamp(v, min, max) {
  * - Controlled by baseDeleteDelayMs, min/max, and power.
  */
 function computeDeleteDelayMs(len, opts) {
-  const minD = opts.minDeleteDelayMs ?? 1;
-  const maxD = opts.maxDeleteDelayMs ?? 12;
+  const minD = opts.minDeleteDelayMs ?? 0;     // permite quase 0ms (mas vamos clamp abaixo)
+  const maxD = opts.maxDeleteDelayMs ?? 6;     // evita ficar lento em frases curtas
 
-  // target total delete time per sentence (ms)
-  const targetTotalMs = opts.deleteTotalMs ?? 180;
+  // target total delete time per sentence (ms) — turbo
+  const targetTotalMs = opts.deleteTotalMs ?? 90; // 60–120 é “quase instantâneo”
 
   const perChar = targetTotalMs / Math.max(1, len);
-  return clamp(perChar, minD, maxD);
+
+  // clamp: nunca menos de 1ms para não bloquear o event loop com loops apertados
+  return clamp(perChar, 1, maxD);
 }
+
 
 
 export function createTextAnimator(textEl) {
@@ -75,23 +78,17 @@ export function createTextAnimator(textEl) {
       // NEW: lag before deleting
       await sleep(preDeleteLagMs);
 
-      // DELETE (adaptive speed)
-      const deleteDelayMs = computeDeleteDelayMs(sentence.length, {
-        baseDeleteDelayMs: opts.baseDeleteDelayMs ?? opts.deleteDelayMs ?? 10,
-        minDeleteDelayMs: opts.minDeleteDelayMs ?? 2,
-        maxDeleteDelayMs: opts.maxDeleteDelayMs ?? 14,
-        deleteSpeedPower: opts.deleteSpeedPower ?? 0.75,
-      });
+   // DELETE (fixed total time per sentence, almost instant)
+const deleteTotalMs = opts.deleteTotalMs ?? 70; // 50–90ms
+const perCharDelay = Math.max(1, Math.floor(deleteTotalMs / Math.max(1, sentence.length)));
 
-      for (let i = 0; i < sentence.length; i++) {
-        if (id !== runId) return;
-        current = current.slice(0, -1);
-        setTextWithCursor(current);
-        await sleep(deleteDelayMs);
-      }
+for (let i = 0; i < sentence.length; i++) {
+  if (id !== runId) return;
+  current = current.slice(0, -1);
+  setTextWithCursor(current);
+  await sleep(perCharDelay);
+}
 
-      await sleep(betweenSentenceMs);
-    }
 
     // End: clear everything
     textEl.textContent = "";
