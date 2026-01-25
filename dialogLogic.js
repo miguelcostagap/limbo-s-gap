@@ -1,8 +1,12 @@
 // dialogLogic.js
 import { SPHERE_CONFIG as CONFIG } from "./sphereConfigControlPanel.js";
 import { createVirtualMiguel } from "./ai/virtualMiguel.js";
+import { createPromptLoadingController } from "./promptLoading.js";
 
 export function initDialogLogic({ onStartDialog, onAnimateDialog } = {}) {
+
+  const loadingUI = createPromptLoadingController();
+
   const input = document.getElementById("promptTextInput");
   const button = document.getElementById("promptSendButton");
 
@@ -26,6 +30,7 @@ export function initDialogLogic({ onStartDialog, onAnimateDialog } = {}) {
 
     if (isBusy) return;
     isBusy = true;
+  loadingUI.start();
 
     try {
       const result = await vm.ask(userText);
@@ -59,6 +64,8 @@ export function initDialogLogic({ onStartDialog, onAnimateDialog } = {}) {
       if (typeof onStartDialog === "function") onStartDialog(fallback, durationMs);
       console.error("Virtual Miguel error:", err);
     } finally {
+          loadingUI.stop();
+
       isBusy = false;
     }
   }
