@@ -451,8 +451,8 @@ canvas {
 }
 
 #centerContentText {
-  max-width: 66vh;
-  max-height: 66vh;
+  max-width: 60vh;
+  max-height: 60vh;
 
   /* Wrap / quebras de linha */
   white-space: pre-wrap;     /* respeita quebras e permite wrap */

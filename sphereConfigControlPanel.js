@@ -13,13 +13,13 @@ gptWarmupEnabled: true,
 // Dialog timings
 dialogInDurationMs: 900,
 dialogOutDurationMs: 900,
-dialogMinHoldMs: 2000,
+dialogMinHoldMs: 1000,
 
 // Text animation
 dialogTypeDelayMs: 22,
 dialogDeleteDelayMs: 100,
 dialogSentenceHoldMs: 300,
-dialogBetweenSentenceMs: 100,
+dialogBetweenSentenceMs: 1000,
 dialogCursorBlinkMs: 420,
 
   // tamanho da esfera
