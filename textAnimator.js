@@ -14,23 +14,16 @@ function clamp(v, min, max) {
  * - Controlled by baseDeleteDelayMs, min/max, and power.
  */
 function computeDeleteDelayMs(len, opts) {
-  const base = opts.baseDeleteDelayMs ?? 10; // "normal" delete delay
-  const minD = opts.minDeleteDelayMs ?? 2;
-  const maxD = opts.maxDeleteDelayMs ?? 14;
-  const power = opts.deleteSpeedPower ?? 0.75;
+  const minD = opts.minDeleteDelayMs ?? 1;
+  const maxD = opts.maxDeleteDelayMs ?? 12;
 
-  // reference length where base applies (tweakable)
-  const refLen = 40;
+  // target total delete time per sentence (ms)
+  const targetTotalMs = opts.deleteTotalMs ?? 180;
 
-  // scale: >1 for short strings (slower), <1 for long strings (faster)
-  const scale = Math.pow(refLen / Math.max(1, len), power);
-
-  // result: long len -> smaller delay
-  const adaptive = base * scale;
-
-  // clamp so it never gets ridiculous
-  return clamp(adaptive, minD, maxD);
+  const perChar = targetTotalMs / Math.max(1, len);
+  return clamp(perChar, minD, maxD);
 }
+
 
 export function createTextAnimator(textEl) {
   let runId = 0;
