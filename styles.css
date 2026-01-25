@@ -325,7 +325,7 @@ canvas {
 
 /* controlo: botões lado a lado */
 #controlBarInner {
-  justify-content: center;
+  justify-content: space-evenly;
   flex-wrap: nowrap;  /* ou wrap se quiseres */
 }
 

@@ -12,20 +12,20 @@ export const VIDEO_PORTAL_CONFIG = {
 // Array que liga os botões (por ordem) aos vídeos
 // 👉 Ajusta os paths dos vídeos como quiseres
 export const BUTTON_VIDEO_MAP = [
- /*
-  {
-    label: "in dev... 🔒",
-    videoSrc: "videos/in-dev-1.mp4"
-  },
-  {
-    label: "in dev... 🔒",
-    videoSrc: "videos/in-dev-2.mp4"
-  },  
-  */
-  {
-    label: "me",
-    videoSrc: "videos/me.mp4"
-  },
+  /*
+   {
+     label: "in dev... 🔒",
+     videoSrc: "videos/in-dev-1.mp4"
+   },
+   {
+     label: "in dev... 🔒",
+     videoSrc: "videos/in-dev-2.mp4"
+   },  
+     {
+     label: "in dev... 🔒",
+     videoSrc: "videos/in-dev-2.mp4"
+   },  
+   */
   {
     label: "my work",
     videoSrc: "videos/my-work.mp4"
@@ -119,54 +119,54 @@ export function initControlBarVideos({
     }, config.delayBeforeHideAfterEndMs);
     currentTimeouts.push(t);
   };
-async function triggerDownload(url, filename) {
-  // Must be called directly from the click handler chain to avoid popup-blockers.
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Download failed: ${res.status}`);
-  const blob = await res.blob();
+  async function triggerDownload(url, filename) {
+    // Must be called directly from the click handler chain to avoid popup-blockers.
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+    const blob = await res.blob();
 
-  const objectUrl = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = objectUrl;
-  a.download = filename || "";
-  a.style.display = "none";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objectUrl;
+    a.download = filename || "";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
 
-  // cleanup
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-}
+    // cleanup
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  }
 
   // Handler para "classic cv" (não reproduz vídeo; delega para onClassicCv)
-function triggerClassicCv(cfg, label) {
-  clearAllTimeouts();
+  function triggerClassicCv(cfg, label) {
+    clearAllTimeouts();
 
-  // 🔽 AUTO-DOWNLOAD (allowed because we're still in click stack)
-triggerDownload("download_files/classic_cv.pdf", "classic_cv.pdf")
-  .catch(err => console.warn("Download error:", err));
+    // 🔽 AUTO-DOWNLOAD (allowed because we're still in click stack)
+    triggerDownload("download_files/classic_cv.pdf", "classic_cv.pdf")
+      .catch(err => console.warn("Download error:", err));
 
-  // stop/clear video
-  videoEl.pause();
-  videoEl.removeAttribute("src");
-  try { videoEl.load(); } catch (_) {}
+    // stop/clear video
+    videoEl.pause();
+    videoEl.removeAttribute("src");
+    try { videoEl.load(); } catch (_) { }
 
-  // fade-in overlay
-  videoOverlay.style.transition = `opacity ${config.fadeInDurationMs / 1000}s ease-out`;
-  showVideoOverlay();
+    // fade-in overlay
+    videoOverlay.style.transition = `opacity ${config.fadeInDurationMs / 1000}s ease-out`;
+    showVideoOverlay();
 
-  if (typeof onClassicCv === "function") {
-    onClassicCv({
-      showOverlay: showVideoOverlay,
-      hideOverlay: hideVideoOverlay,
-      overlayEl: videoOverlay,
-      videoEl,
-      buttonCfg: cfg,
-      label,
-      config
-    });
+    if (typeof onClassicCv === "function") {
+      onClassicCv({
+        showOverlay: showVideoOverlay,
+        hideOverlay: hideVideoOverlay,
+        overlayEl: videoOverlay,
+        videoEl,
+        buttonCfg: cfg,
+        label,
+        config
+      });
+    }
   }
-}
 
 
   // Ligar cada botão a uma entrada do array

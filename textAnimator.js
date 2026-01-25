@@ -78,18 +78,18 @@ export function createTextAnimator(textEl) {
       // NEW: lag before deleting
       await sleep(preDeleteLagMs);
 
-// DELETE (turbo) — delete multiple chars per tick
-const perTickDelayMs = opts.deleteDelayMs ?? 1;     // usa a tua config existente
-const chunkSize = opts.deleteChunkSize ?? 12;       // 12 chars por tick (muito rápido)
+      // DELETE (turbo) — delete multiple chars per tick
+      const betweenSentenceMs = opts.betweenSentenceMs ?? 1;     // usa a tua config existente
+      const chunkSize = opts.deleteChunkSize ?? 12;       // 12 chars por tick (muito rápido)
 
-while (current.length > 0) {
-  if (id !== runId) return;
-  current = current.slice(0, Math.max(0, current.length - chunkSize));
-  setTextWithCursor(current);
+      while (current.length > 0) {
+        if (id !== runId) return;
+        current = current.slice(0, Math.max(0, current.length - chunkSize));
+        setTextWithCursor(current);
 
-  // Se queres ainda mais instantâneo: mete 0 e usa requestAnimationFrame (ver abaixo)
-  await sleep(perTickDelayMs);
-}
+        // Se queres ainda mais instantâneo: mete 0 e usa requestAnimationFrame (ver abaixo)
+        await sleep(betweenSentenceMs);
+      }
 
     }
 
