@@ -78,6 +78,7 @@ export function createTextAnimator(textEl) {
       // NEW: lag before deleting
       await sleep(preDeleteLagMs);
 
+      // DELETE (adaptive speed)
    // DELETE (fixed total time per sentence, almost instant)
 const deleteTotalMs = opts.deleteTotalMs ?? 70; // 50–90ms
 const perCharDelay = Math.max(1, Math.floor(deleteTotalMs / Math.max(1, sentence.length)));
@@ -88,7 +89,7 @@ for (let i = 0; i < sentence.length; i++) {
   setTextWithCursor(current);
   await sleep(perCharDelay);
 }
-
+    }
 
     // End: clear everything
     textEl.textContent = "";
