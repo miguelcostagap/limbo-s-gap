@@ -1,12 +1,35 @@
 // ui/textAnimator.js
-// Sentence-by-sentence animation:
-// - type char-by-char with a blinking cursor
-// - pause
-// - delete quickly
-// - repeat
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+
+/**
+ * Compute an adaptive delete delay:
+ * - Longer sentences => smaller delay => faster deletion
+ * - Controlled by baseDeleteDelayMs, min/max, and power.
+ */
+function computeDeleteDelayMs(len, opts) {
+  const base = opts.baseDeleteDelayMs ?? 10; // "normal" delete delay
+  const minD = opts.minDeleteDelayMs ?? 2;
+  const maxD = opts.maxDeleteDelayMs ?? 14;
+  const power = opts.deleteSpeedPower ?? 0.75;
+
+  // reference length where base applies (tweakable)
+  const refLen = 40;
+
+  // scale: >1 for short strings (slower), <1 for long strings (faster)
+  const scale = Math.pow(refLen / Math.max(1, len), power);
+
+  // result: long len -> smaller delay
+  const adaptive = base * scale;
+
+  // clamp so it never gets ridiculous
+  return clamp(adaptive, minD, maxD);
 }
 
 export function createTextAnimator(textEl) {
@@ -18,22 +41,18 @@ export function createTextAnimator(textEl) {
   }
 
   function setTextWithCursor(text) {
-    // Cursor is a glyph; keep it simple and reliable.
     textEl.textContent = text + (cursorOn ? "▍" : "");
   }
 
   async function animateSentences(sentences, opts = {}) {
     const id = ++runId;
 
-    const {
-      typeDelayMs = 22,
-      deleteDelayMs = 8,
-      sentenceHoldMs = 300,
-      betweenSentenceMs = 80,
-      cursorBlinkMs = 420
-    } = opts;
+    const typeDelayMs = opts.typeDelayMs ?? 22;
+    const preDeleteLagMs = opts.preDeleteLagMs ?? 450;
+    const betweenSentenceMs = opts.betweenSentenceMs ?? 120;
+    const cursorBlinkMs = opts.cursorBlinkMs ?? 420;
 
-    // Cursor blinker (async loop)
+    // Cursor blinker loop
     (async () => {
       while (id === runId) {
         cursorOn = !cursorOn;
@@ -52,7 +71,7 @@ export function createTextAnimator(textEl) {
       const sentence = String(rawSentence || "").trim();
       if (!sentence) continue;
 
-      // Type
+      // TYPE
       for (let i = 0; i < sentence.length; i++) {
         if (id !== runId) return;
         current += sentence[i];
@@ -60,9 +79,17 @@ export function createTextAnimator(textEl) {
         await sleep(typeDelayMs);
       }
 
-      await sleep(sentenceHoldMs);
+      // NEW: lag before deleting
+      await sleep(preDeleteLagMs);
 
-      // Delete fast
+      // DELETE (adaptive speed)
+      const deleteDelayMs = computeDeleteDelayMs(sentence.length, {
+        baseDeleteDelayMs: opts.baseDeleteDelayMs ?? opts.deleteDelayMs ?? 10,
+        minDeleteDelayMs: opts.minDeleteDelayMs ?? 2,
+        maxDeleteDelayMs: opts.maxDeleteDelayMs ?? 14,
+        deleteSpeedPower: opts.deleteSpeedPower ?? 0.75,
+      });
+
       for (let i = 0; i < sentence.length; i++) {
         if (id !== runId) return;
         current = current.slice(0, -1);
@@ -73,12 +100,11 @@ export function createTextAnimator(textEl) {
       await sleep(betweenSentenceMs);
     }
 
-    // Clear at end (your requirement: everything goes away)
+    // End: clear everything
     textEl.textContent = "";
   }
 
   function stop() {
-    // Invalidate current animation
     runId++;
     cursorOn = true;
     textEl.textContent = "";

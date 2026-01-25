@@ -17,9 +17,9 @@ dialogMinHoldMs: 2000,
 
 // Text animation
 dialogTypeDelayMs: 22,
-dialogDeleteDelayMs: 8,
+dialogDeleteDelayMs: 100,
 dialogSentenceHoldMs: 300,
-dialogBetweenSentenceMs: 80,
+dialogBetweenSentenceMs: 100,
 dialogCursorBlinkMs: 420,
 
   // tamanho da esfera

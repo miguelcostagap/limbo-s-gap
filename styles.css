@@ -449,3 +449,23 @@ canvas {
   transform-origin: center center;
   transition: transform 2.6s cubic-bezier(.2,.8,.2,1);
 }
+
+#centerContentText {
+  max-width: 66vh;
+  max-height: 66vh;
+
+  /* Wrap / quebras de linha */
+  white-space: pre-wrap;     /* respeita quebras e permite wrap */
+  overflow-wrap: anywhere;   /* quebra palavras longas */
+  word-break: break-word;    /* fallback */
+
+  /* Nunca ultrapassar o “quadrado” */
+  overflow: hidden;
+
+  /* Centrado */
+  text-align: center;
+  margin: 0 auto;
+
+  /* Opcional: melhorar legibilidade */
+  line-height: 1.35;
+}
