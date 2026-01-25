@@ -14,7 +14,10 @@ const THEME_CONFIG = {
       control: "iconBrancoControl.png"
 
     },
-
+    loading: {
+      track: "#b1b8bd",
+      fill: "#ffffff)"
+    },
     shadowImage: "shadowSphereWhite.png",
     apertureColor: "#a0aa17",
     apertureGradA: "#44444462",
@@ -32,7 +35,10 @@ const THEME_CONFIG = {
       keyboard: "iconCinzaTeclado.png",
       control: "iconCinzaControl.png"
     },
-
+    loading: {
+      track: "#444444",
+      fill: "#2c2c2c"
+    },
     shadowImage: "shadowSphereCinza.png",
     apertureColor: "#2323aa",
     apertureGradA: "#ced3d669",
@@ -45,6 +51,7 @@ const THEME_CONFIG = {
 const THEMED_ELEMENTS = [
   "promptBarInner",
   "controlBarInner",
+  "promptBarLoading",
   "controlPanel",
   "centerContentOverlay"
 ];
@@ -106,6 +113,9 @@ export function initThemeManager({ scene, sphere }) {
     document.documentElement.style.setProperty("--center-text-color", cfg.centerTextColor);
     document.documentElement.style.setProperty("--aperture-grad-a", cfg.apertureGradA);
     document.documentElement.style.setProperty("--aperture-grad-b", cfg.apertureGradB);
+    // 8) theme variables for loading bar
+    document.documentElement.style.setProperty("--loading-track", cfg.loading?.track || "rgba(255,255,255,0.08)");
+    document.documentElement.style.setProperty("--loading-fill", cfg.loading?.fill || "rgba(255,255,255,0.30)");
 
   }
 
