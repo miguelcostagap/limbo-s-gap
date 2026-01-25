@@ -36,9 +36,12 @@ export const BUTTON_VIDEO_MAP = [
   }
 ];
 
-// initControlBarVideos recebe um callback para disparar o hollow
+// initControlBarVideos recebe callbacks:
+// - onTriggerPrompt(label): dispara o hollow / prompt (mantém-se)
+// - onClassicCv(helpers): executa a tua animação SVG 1x (novo)
 export function initControlBarVideos({
   onTriggerPrompt,
+  onClassicCv,                 // <-- NOVO
   config = VIDEO_PORTAL_CONFIG
 } = {}) {
   const bar = document.getElementById("controlBarInner");
@@ -58,9 +61,7 @@ export function initControlBarVideos({
   }
 
   // Ajustar transições dinamicamente conforme config
-  videoOverlay.style.transition = `opacity ${
-    config.fadeInDurationMs / 1000
-  }s ease-out`;
+  videoOverlay.style.transition = `opacity ${config.fadeInDurationMs / 1000}s ease-out`;
 
   let currentTimeouts = [];
   function clearAllTimeouts() {
@@ -73,15 +74,17 @@ export function initControlBarVideos({
   }
 
   function hideVideoOverlay() {
-    // mudar duração da transição para o fade-out, se quiseres diferente
-    videoOverlay.style.transition = `opacity ${
-      config.fadeOutDurationMs / 1000
-    }s ease-out`;
+    // mudar duração da transição para o fade-out
+    videoOverlay.style.transition = `opacity ${config.fadeOutDurationMs / 1000}s ease-out`;
     videoOverlay.classList.remove("visible");
   }
 
   function playVideoForConfig(buttonCfg) {
     clearAllTimeouts();
+
+    // garantir que qualquer modo alternativo é removido
+    videoOverlay.classList.remove("classic-cv-active");
+    videoEl.style.display = "";
 
     // escolher vídeo
     videoEl.pause();
@@ -89,15 +92,13 @@ export function initControlBarVideos({
     videoEl.load();
 
     // garantir que o fade-in usa o timing certo
-    videoOverlay.style.transition = `opacity ${
-      config.fadeInDurationMs / 1000
-    }s ease-out`;
+    videoOverlay.style.transition = `opacity ${config.fadeInDurationMs / 1000}s ease-out`;
 
-    // 1) esperar um pequeno delay antes de mostrar o overlay
+    // 1) mostrar overlay
     const t1 = setTimeout(() => {
       showVideoOverlay();
 
-      // 2) esperar mais um bocadinho antes de dar play no vídeo
+      // 2) esperar antes de dar play
       const t2 = setTimeout(() => {
         videoEl.currentTime = 0;
         videoEl.play().catch((err) => {
@@ -118,6 +119,55 @@ export function initControlBarVideos({
     }, config.delayBeforeHideAfterEndMs);
     currentTimeouts.push(t);
   };
+async function triggerDownload(url, filename) {
+  // Must be called directly from the click handler chain to avoid popup-blockers.
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+  const blob = await res.blob();
+
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = filename || "";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  // cleanup
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+}
+
+  // Handler para "classic cv" (não reproduz vídeo; delega para onClassicCv)
+function triggerClassicCv(cfg, label) {
+  clearAllTimeouts();
+
+  // 🔽 AUTO-DOWNLOAD (allowed because we're still in click stack)
+triggerDownload("download_files/classic_cv.pdf", "classic_cv.pdf")
+  .catch(err => console.warn("Download error:", err));
+
+  // stop/clear video
+  videoEl.pause();
+  videoEl.removeAttribute("src");
+  try { videoEl.load(); } catch (_) {}
+
+  // fade-in overlay
+  videoOverlay.style.transition = `opacity ${config.fadeInDurationMs / 1000}s ease-out`;
+  showVideoOverlay();
+
+  if (typeof onClassicCv === "function") {
+    onClassicCv({
+      showOverlay: showVideoOverlay,
+      hideOverlay: hideVideoOverlay,
+      overlayEl: videoOverlay,
+      videoEl,
+      buttonCfg: cfg,
+      label,
+      config
+    });
+  }
+}
+
 
   // Ligar cada botão a uma entrada do array
   buttons.forEach((btn, index) => {
@@ -125,16 +175,19 @@ export function initControlBarVideos({
     if (!cfg) return;
 
     btn.addEventListener("click", () => {
-      const label =
-        cfg.label || (btn.textContent ? btn.textContent.trim() : "");
+      const label = cfg.label || (btn.textContent ? btn.textContent.trim() : "");
 
       // 1) disparar a animação de hollow / buraco na esfera
       if (typeof onTriggerPrompt === "function") {
         onTriggerPrompt(label);
       }
 
-      // 2) tocar o vídeo correspondente
-      playVideoForConfig(cfg);
+      // 2) classic cv -> SVG; resto -> vídeo
+      if ((cfg.label || "").toLowerCase() === "classic cv") {
+        triggerClassicCv(cfg, label);
+      } else {
+        playVideoForConfig(cfg);
+      }
     });
   });
 }

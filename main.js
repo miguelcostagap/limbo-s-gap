@@ -8,9 +8,12 @@ import { initImageShadowControl } from "./imageShadowControl.js";
 import { initThemeManager } from "./themeManager.js";
 import {
   initControlBarVideos,
-  VIDEO_PORTAL_CONFIG
+  VIDEO_PORTAL_CONFIG,
+  BUTTON_VIDEO_MAP
 } from "./controlBarVideos.js";
 import { initDialogLogic } from "./dialogLogic.js";
+import { initClassicCvAperturePortal } from "./classicCvAperture.js";
+import { createTextAnimator } from "./textAnimator.js";
 
 
 // set up three-js
@@ -57,6 +60,8 @@ const themeManager = initThemeManager({
 // aply initial theme
 themeManager.applyTheme("gray");
 
+const appRoot = document.getElementById("rootAppContainer");
+
 // ---------- UI: toggle (quicl actions / keyboard input) ----------
 
 const controlBarInner = document.getElementById("controlBarInner");
@@ -68,9 +73,16 @@ const promptBarIcon = document.getElementById("promptBarIcon");
 const promptBarIconImage = document.getElementById("promptBarIconImage");
 
 const themeToggleButton = document.getElementById("themeToggleButton");
+// When a quick action is running we temporarily hide the entire prompt UI.
+// Once the app returns to idle (and the video overlay is gone), we restore
+// the initial UI state (control bar visible).
+let uiAutoRestorePending = false;
+const videoShadowOverlay = document.getElementById("videoShadow");
 
 // funcions to show or hide bars
 function showControlBar() {
+  uiAutoRestorePending = false; // user override
+
   controlBarInner.classList.remove("hidden");
   controlBarIcon.classList.add("hidden");
 
@@ -79,6 +91,8 @@ function showControlBar() {
 }
 
 function showPromptBar() {
+  uiAutoRestorePending = false; // user override
+
   controlBarInner.classList.add("hidden");
   controlBarIcon.classList.remove("hidden");
 
@@ -92,9 +106,26 @@ function hideAllBars(){
   promptBarInner.classList.add("hidden");
   controlBarIcon.classList.add("hidden");
 }
+function enterQuickActionMode() {
+  hideAllBars();
+  uiAutoRestorePending = true;
+    if (appRoot) appRoot.classList.add("app-quick-zoom");
 
+}
 // initital sate: quick actions bar visible, keyboard input hidden
 showControlBar();
+
+// Clicking any mapped quick action hides BOTH bars (control bar + prompt bar).
+if (controlBarInner) {
+  const allControlButtons = Array.from(
+    controlBarInner.querySelectorAll(".controlButton")
+  ).filter((btn) => btn !== themeToggleButton);
+
+  const mappedQuickActions = allControlButtons.slice(0, BUTTON_VIDEO_MAP.length);
+  mappedQuickActions.forEach((btn) => {
+    btn.addEventListener("click", enterQuickActionMode);
+  });
+}
 
 // icons listeners
 promptBarIcon.addEventListener("click", () => {
@@ -127,11 +158,24 @@ initUserInterface(
 
 // prompt / hollow
 const promptController = initPromptControl(() => ({ ...lastMouseNDC }));
+const dialogTextEl = promptController.getDialogTextElement
+  ? promptController.getDialogTextElement()
+  : document.getElementById("centerContentText");
+
+const dialogAnimator = createTextAnimator(dialogTextEl);
 const imageShadowController = initImageShadowControl();
 
+const classicCvPortal = initClassicCvAperturePortal({
+  config: {
+    durationMs: 5200,
+    spinDegTotal: 170
+  }
+});
 // Control bar → videos + magnet 
 initControlBarVideos({
   onTriggerPrompt: (label) => {
+        enterQuickActionMode();
+
     if (
       promptController &&
       typeof promptController.triggerPrompt === "function"
@@ -139,20 +183,29 @@ initControlBarVideos({
       promptController.triggerPrompt(label);
     }
   },
+    onClassicCv: (helpers) => {
+    classicCvPortal.playOnce(helpers);
+  },
   config: VIDEO_PORTAL_CONFIG
 });
 
 // text input 
 initDialogLogic({
   onStartDialog: (answer, durationMs) => {
-    if (
-      promptController &&
-      typeof promptController.triggerDialog === "function"
-    ) {
-      promptController.triggerDialog(answer, durationMs);
-    }
+    promptController.triggerDialog(answer, durationMs);
+  },
+  onAnimateDialog: (sentences) => {
+    dialogAnimator.stop();
+    dialogAnimator.animateSentences(sentences, {
+      typeDelayMs: CONFIG.dialogTypeDelayMs,
+      deleteDelayMs: CONFIG.dialogDeleteDelayMs,
+      sentenceHoldMs: CONFIG.dialogSentenceHoldMs,
+      betweenSentenceMs: CONFIG.dialogBetweenSentenceMs,
+      cursorBlinkMs: CONFIG.dialogCursorBlinkMs
+    });
   }
 });
+
 
 // control panel (config in dev only)
 initSphereConfigPanel();
@@ -177,6 +230,22 @@ imageShadowController.update(
   promptState.dialogMode    // TRUE when manual text input!!!!!!!!!!!!
 );
 
+
+ 
+  // Auto-restore UI after a quick action: only when we're back to idle AND
+  // the video portal is no longer visible.
+// Auto-restore quando volta ao controlo normal do rato (magnet real)
+if (uiAutoRestorePending) {
+  const mouseBackToNormal = !promptState.virtualMouseNDC; // aqui está o teu sinal do magnet
+
+  // opcional: também exigir idle para evitar flicker
+  if (mouseBackToNormal && promptState.phase === "idle") {
+    showControlBar();          // estado inicial
+    uiAutoRestorePending = false;
+    if (appRoot) appRoot.classList.remove("app-quick-zoom");
+
+  }
+}
 
 
   // switch between live mouse tracking or random

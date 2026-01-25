@@ -1,6 +1,27 @@
 // sphereConfigControlPanel.js
 
 export const SPHERE_CONFIG = {
+
+
+  //new to be iplemented (here for now new file after)...
+
+  // GPT PROXY (Cloudflare Worker)
+gptProxyEndpoint: "https://miguel-gpt-proxy.miguelcostagap.workers.dev/api/chat",
+gptModel: "gpt-5-mini-2025-08-07",
+gptWarmupEnabled: true,
+
+// Dialog timings
+dialogInDurationMs: 900,
+dialogOutDurationMs: 900,
+dialogMinHoldMs: 2000,
+
+// Text animation
+dialogTypeDelayMs: 22,
+dialogDeleteDelayMs: 8,
+dialogSentenceHoldMs: 300,
+dialogBetweenSentenceMs: 80,
+dialogCursorBlinkMs: 420,
+
   // tamanho da esfera
   sphereRadius: 60,
 

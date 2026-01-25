@@ -15,7 +15,11 @@ const THEME_CONFIG = {
 
     },
 
-    shadowImage: "shadowSphereWhite.png"
+    shadowImage: "shadowSphereWhite.png",
+    apertureColor: "#a0aa17",
+    apertureGradA: "#44444462",
+    apertureGradB: "#ced3d669",
+    centerTextColor: "#444444"
   },
 
   white: {
@@ -29,7 +33,11 @@ const THEME_CONFIG = {
       control: "iconCinzaControl.png"
     },
 
-    shadowImage: "shadowSphereCinza.png"
+    shadowImage: "shadowSphereCinza.png",
+    apertureColor: "#2323aa",
+    apertureGradA: "#ced3d669",
+    apertureGradB: "#4444447e",
+    centerTextColor: "#ced3d6"
   }
 };
 
@@ -92,6 +100,13 @@ export function initThemeManager({ scene, sphere }) {
       el.classList.remove("is-theme-gray", "is-theme-white");
       el.classList.add(`is-theme-${name}`);
     });
+
+    // 7) expose theme colors to CSS (SVG + center text use these)
+    document.documentElement.style.setProperty("--aperture-color", cfg.apertureColor);
+    document.documentElement.style.setProperty("--center-text-color", cfg.centerTextColor);
+    document.documentElement.style.setProperty("--aperture-grad-a", cfg.apertureGradA);
+    document.documentElement.style.setProperty("--aperture-grad-b", cfg.apertureGradB);
+
   }
 
   function toggleTheme() {
@@ -103,5 +118,5 @@ export function initThemeManager({ scene, sphere }) {
   }
 
   return { applyTheme, toggleTheme, getCurrentTheme };
-  
+
 }

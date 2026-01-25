@@ -13,6 +13,11 @@
   /* FALTAVA: */
   --panel-bg: rgba(0, 0, 0, 0.04);
   --panel-border: rgba(0, 0, 0, 0.08);
+
+  /* for svg */
+--aperture-color: var(--button-bg);
+--center-text-color: var(--input-text-color);
+
 }
 
 body.theme-gray {
@@ -201,7 +206,7 @@ canvas {
 #centerContentOverlay.visible {
   opacity: 1;
 }
-/* Overlay para conteúdo no centro */
+
 #imageShadow {
   position: absolute;
   inset: 0;
@@ -209,9 +214,9 @@ canvas {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  z-index: 3;                 /* acima da esfera, abaixo do painel se quiseres */
-  opacity: 0;                 /* começa invisível */
-  transition: opacity 0.4s ease-out; /* só para suavizar o fade */
+  z-index: 3;                 
+  opacity: 0;                 
+  transition: opacity 0.4s ease-out;
 }
 
 #imageShadow.visible {
@@ -223,7 +228,7 @@ canvas {
   height: auto;
   aspect-ratio: 1/1;
   transform-origin: center center;
-  transform: scale(0);        /* começa a 0, cresce via JS */
+  transform: scale(0);        /* starts at 0, grows via JS */
 }
 
 /* Painel de controlo */
@@ -409,4 +414,38 @@ canvas {
   aspect-ratio: 1/1;
   transform-origin: center center;
   /* se quiseres, podes aplicar scale aqui via JS no futuro */
+}
+
+
+
+
+
+/* update janeiro 2025*/
+
+#centerContentOverlay{
+  color: var(--center-text-color);
+}
+
+#centerContentText{
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--center-text-color);
+}
+#videoShadow .classicCvApertureSvg{
+  width: 66vh;
+  height: auto;
+  aspect-ratio: 1/1;
+  display: none;
+}
+
+#videoShadow.classic-cv-active video{ display:none; }
+#videoShadow.classic-cv-active .classicCvApertureSvg{ display:block; }
+  
+
+.app-quick-zoom {
+  transform: scale(1.4);
+  transform-origin: center center;
+  transition: transform 2.6s cubic-bezier(.2,.8,.2,1);
 }

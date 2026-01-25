@@ -31,7 +31,7 @@ export function initPromptControl(getMouseNDC) {
 
   let mode = "idle"; // "idle" | "control" | "dialog"
 
-  // ---- ESTADO DIALOG ----
+  // ---- DIALOG MODE ----
   let dialogStartTime = 0;
   let dialogTotalDuration = 0;
   let dialogInDuration = CONFIG.dialogInDurationMs;
@@ -39,7 +39,7 @@ export function initPromptControl(getMouseNDC) {
   let dialogMinHold = CONFIG.dialogMinHoldMs;
   let dialogHoldEnd = 0;
 
-  // ---------- CONTROL BAR (vídeos) ----------
+  // ---------- CONTROL BAR (videos) ----------
   function triggerPrompt(text) {
     const mouse = getMouseNDC ? getMouseNDC() : { x: 0, y: 0 };
 
@@ -65,7 +65,7 @@ export function initPromptControl(getMouseNDC) {
     overlay.classList.add("visible");
 
     mode = "dialog";
-    phase = Phase.Hollow; // mantém hollow para o imageShadowControl
+    phase = Phase.Hollow; // KEEP IT hollow for imageShadowControl
 
     dialogInDuration = CONFIG.dialogInDurationMs;
     dialogOutDuration = CONFIG.dialogOutDurationMs;
@@ -123,7 +123,7 @@ export function initPromptControl(getMouseNDC) {
       };
     }
 
-    // ============ CONTROL MODE (vídeos / magnet forte) ============
+    // ============ CONTROL MODE (videos / random magnet) ============
     if (mode === "control" && phase === Phase.Transition) {
       const dur = transitionDurationMs();
       const t = Math.min(1, (now - transitionStartTime) / dur);

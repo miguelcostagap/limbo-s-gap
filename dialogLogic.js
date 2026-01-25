@@ -1,39 +1,69 @@
 // dialogLogic.js
 import { SPHERE_CONFIG as CONFIG } from "./sphereConfigControlPanel.js";
+import { createVirtualMiguel } from "./ai/virtualMiguel.js";
 
-/**
- * Lógica de diálogo "fake" por agora.
- * No futuro, aqui ligas à API do GPT.
- */
-export function initDialogLogic({ onStartDialog } = {}) {
+export function initDialogLogic({ onStartDialog, onAnimateDialog } = {}) {
   const input = document.getElementById("promptTextInput");
   const button = document.getElementById("promptSendButton");
 
   if (!input || !button) {
-    console.warn(
-      "dialogLogic: promptTextInput ou promptSendButton não encontrados."
-    );
+    console.warn("dialogLogic: promptTextInput ou promptSendButton não encontrados.");
     return;
   }
 
-  function handleSend() {
+  const vm = createVirtualMiguel({
+    endpointUrl: CONFIG.gptProxyEndpoint,
+    model: CONFIG.gptModel,
+    warmupEnabled: CONFIG.gptWarmupEnabled
+  });
+
+  // kick warm-up ASAP (no UI impact)
+  vm.prepare();
+
+  let isBusy = false;
+
+  async function handleSend() {
     const userText = input.value.trim();
     if (!userText) return;
 
-    // limpa o input
     input.value = "";
 
-    // resposta fixa por agora
-    const reply = "we are almost finished in creating a virtual miguel";
+    if (isBusy) return;
+    isBusy = true;
 
-    // tempo de leitura proporcional ao tamanho da resposta
-    const secondsPerChar = CONFIG.dialogSecondsPerChar ?? 0.08;
-    const baseMs = reply.length * secondsPerChar * 1000;
-    const minMs = 3000;
-    const durationMs = Math.max(baseMs, minMs);
+    try {
+      const result = await vm.ask(userText);
 
-    if (typeof onStartDialog === "function") {
-      onStartDialog(reply, durationMs);
+      const sentences =
+        Array.isArray(result?.answerSentences) && result.answerSentences.length
+          ? result.answerSentences
+          : ["..."];
+
+      const typeDelay = CONFIG.dialogTypeDelayMs ?? 22;
+      const deleteDelay = CONFIG.dialogDeleteDelayMs ?? 8;
+      const hold = CONFIG.dialogSentenceHoldMs ?? 300;
+      const between = CONFIG.dialogBetweenSentenceMs ?? 80;
+
+      const totalChars = sentences.reduce((sum, s) => sum + String(s).length, 0);
+      const baseMs = totalChars * (typeDelay + deleteDelay) + sentences.length * (hold + between) + 400;
+
+      const minEnvelope =
+        (CONFIG.dialogInDurationMs ?? 900) +
+        (CONFIG.dialogMinHoldMs ?? 2000) +
+        (CONFIG.dialogOutDurationMs ?? 900);
+
+      const durationMs = Math.max(baseMs, minEnvelope);
+
+      if (typeof onStartDialog === "function") onStartDialog("", durationMs);
+      if (typeof onAnimateDialog === "function") onAnimateDialog(sentences);
+    } catch (err) {
+      const fallback = "Opa. Isto falhou do meu lado. Tenta outra vez — se continuar, provavelmente é o proxy.";
+      const durationMs = Math.max(fallback.length * 40, 3500);
+
+      if (typeof onStartDialog === "function") onStartDialog(fallback, durationMs);
+      console.error("Virtual Miguel error:", err);
+    } finally {
+      isBusy = false;
     }
   }
 
