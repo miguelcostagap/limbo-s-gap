@@ -1,4 +1,3 @@
-// ui/promptLoading.js
 export function createPromptLoadingController() {
   const promptBarInner = document.getElementById("promptBarInner");
   const promptBarLoading = document.getElementById("promptBarLoading");
@@ -21,9 +20,9 @@ export function createPromptLoadingController() {
     fill.style.width = `${clamped}%`;
   }
 
-  // Fake progress curve:
-  // - fast start to ~60%
-  // - slowly approaches ~92% and waits for completion
+  // Fake progress curve :DDDDDD
+  // - fast start to 60%
+  // - slowly approaches 92% and waits for completion
   function tick(ts) {
     if (!startTs) startTs = ts;
     const t = (ts - startTs) / 1000; // seconds
@@ -36,7 +35,7 @@ export function createPromptLoadingController() {
       target = (t / 1.2) * 60;
     } else {
       const tt = t - 1.2;
-      target = 60 + (92 - 60) * (1 - Math.exp(-tt * 0.9));
+      target = 60 + (82 - 60) * (1 - Math.exp(-tt * 0.9));
     }
 
     // smooth towards target

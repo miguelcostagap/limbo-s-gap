@@ -10,15 +10,20 @@
   --theme-toggle-ring: #b0b4bc;
   --theme-toggle-inner: #f5f5f7;
 
-  /* FALTAVA: */
   --panel-bg: rgba(0, 0, 0, 0.04);
   --panel-border: rgba(0, 0, 0, 0.08);
+  --promptbar-border-color: var(--bar-border-color);
+  --controlbar-border-color: var(--bar-border-color);
 
-  /* for svg */
---aperture-color: var(--button-bg);
---center-text-color: var(--input-text-color);
-  --loading-track: rgba(255,255,255,0.08);
-  --loading-fill: rgba(255,255,255,0.30);
+  --button-ring-color: rgba(0, 0, 0, 0.08);
+
+  --theme-toggle-ring: rgba(255, 255, 255, 0.25);
+  --theme-toggle-inner: rgba(255, 255, 255, 0.55);
+
+  --aperture-color: var(--button-bg);
+  --center-text-color: var(--input-text-color);
+  --loading-track: rgba(255, 255, 255, 0.08);
+  --loading-fill: rgba(255, 255, 255, 0.30);
 }
 
 body.theme-gray {
@@ -32,7 +37,6 @@ body.theme-gray {
   --theme-toggle-ring: #c3c7cf;
   --theme-toggle-inner: #f5f5f7;
 
-  /* painel no tema cinza */
   --panel-bg: rgba(0, 0, 0, 0.24);
   --panel-border: rgba(0, 0, 0, 0.4);
 }
@@ -48,7 +52,6 @@ body.theme-white {
   --theme-toggle-ring: #c0c4cc;
   --theme-toggle-inner: #2b2e32;
 
-  /* painel no tema claro */
   --panel-bg: rgba(255, 255, 255, 0.92);
   --panel-border: rgba(0, 0, 0, 0.12);
 }
@@ -64,8 +67,6 @@ body {
   color: #000000;
 }
 
-
-/* painel de controlo passa a usar as variáveis */
 
 
 * {
@@ -90,6 +91,7 @@ body {
 canvas {
   display: block;
 }
+
 #promptBarWrapper {
   position: absolute;
   left: 50%;
@@ -109,7 +111,6 @@ canvas {
   width: 100%;
 }
 
-/* barras com aro fino (Apple-ish) */
 #promptBarInner,
 #controlBarInner {
   background: var(--bar-bg-input);
@@ -119,15 +120,13 @@ canvas {
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 2px solid var(--bar-border-color);  /* 👈 borda fina de 5px */
+  border: 2px solid var(--bar-border-color);
 }
 
-/* layout: input ocupa o resto, botão do lado */
 #promptBarInner {
   justify-content: space-between;
 }
 
-/* layout do controlo: botões em linha */
 #controlBarInner {
   justify-content: flex-start;
 }
@@ -147,13 +146,13 @@ canvas {
     box-shadow 0.12s ease-out;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
+
 #promptSendButton:hover,
 .controlButton:hover {
   filter: brightness(0.97);
   transform: translateY(-1px);
 }
-/* Ícones quando a barra está escondida:
-   sem fundo, sem borda, só a imagem visível */
+
 .barToggleIcon {
   display: flex;
   justify-content: center;
@@ -168,15 +167,17 @@ canvas {
   height: 40px;
   width: auto;
 }
+
 .barToggleIcon img:hover {
   opacity: 1;
-  transform: scale(0.9);  /* fica um bocadinho mais pequeno no hover */
+  transform: scale(0.9);
 }
-/* botão estilo Apple: branco com aro fino */
+
 
 .hidden {
   display: none !important;
 }
+
 #promptTextInput {
   flex: 1;
   background: transparent;
@@ -184,10 +185,9 @@ canvas {
   padding: 8px 10px;
   font-size: 14px;
   outline: none;
-  color: var(--input-text-color);   /* 👈 só a cor muda por tema */
+  color: var(--input-text-color);
 }
 
-/* Overlay para conteúdo no centro */
 #centerContentOverlay {
   position: absolute;
   inset: 0;
@@ -215,8 +215,8 @@ canvas {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  z-index: 3;                 
-  opacity: 0;                 
+  z-index: 3;
+  opacity: 0;
   transition: opacity 0.4s ease-out;
 }
 
@@ -229,10 +229,9 @@ canvas {
   height: auto;
   aspect-ratio: 1/1;
   transform-origin: center center;
-  transform: scale(0);        /* starts at 0, grows via JS */
+  transform: scale(0);
 }
 
-/* Painel de controlo */
 #controlPanel {
   position: absolute;
   top: 16px;
@@ -292,7 +291,7 @@ canvas {
 .control-row input[type="range"] {
   width: 100%;
 }
-/* override do botão normal */
+
 .themeToggleButton {
   width: 32px;
   height: 32px;
@@ -307,7 +306,6 @@ canvas {
   position: relative;
 }
 
-/* círculo interior que mostra a cor do tema contrário */
 .themeToggleButton::before {
   content: "";
   width: 70%;
@@ -321,29 +319,27 @@ canvas {
   transform: scale(0.95);
   filter: none;
 }
-/* barras com aro etc, já tinhas */
 
-/* controlo: botões lado a lado */
 #controlBarInner {
   justify-content: space-evenly;
-  flex-wrap: nowrap;  /* ou wrap se quiseres */
+  flex-wrap: nowrap;
 }
 
 
 #promptSendButton {
-  flex: 0 0 auto;   /* não cresce, fica só do tamanho do conteúdo */
+  flex: 0 0 auto;
 }
-/* O botão de tema NÃO deve expandir como os outros */
+
 .themeToggleButton {
-  flex: 0 0 auto;                 /* não expande, não encolhe */
-  width: 32px;                    /* LADO = 32px */
-  height: 32px;                   /* ALTURA = 32px */
-  aspect-ratio: 1 / 1;            /* garante círculo mesmo se ao layout der tilt */
-  
-  padding: 0 !important;          /* remove qualquer interior */
-  box-sizing: border-box;         /* borda incluída no tamanho */
-  border-radius: 50%;             /* transforma num círculo */
-  
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  aspect-ratio: 1 / 1;
+
+  padding: 0 !important;
+  box-sizing: border-box;
+  border-radius: 50%;
+
   border: 3px solid var(--theme-toggle-ring);
   background: transparent;
   position: relative;
@@ -352,22 +348,20 @@ canvas {
   justify-content: center;
 }
 
-/* Círculo interno */
 .themeToggleButton::before {
   content: "";
   width: 70%;
   height: 70%;
-  aspect-ratio: 1 / 1;            /* garante círculo também */
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   background: var(--theme-toggle-inner);
   display: block;
 }
 
-/* Animação suave ao hover */
 .themeToggleButton:hover {
   transform: scale(0.88);
 }
-/* Overlay para conteúdo no centro */
+
 #imageShadow {
   position: absolute;
   inset: 0;
@@ -392,7 +386,6 @@ canvas {
   transform: scale(0);
 }
 
-/* NOVO: vídeo com o mesmo “slot” da imagem */
 #videoShadow {
   position: absolute;
   inset: 0;
@@ -400,7 +393,7 @@ canvas {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  z-index: 4; /* um pouco acima da imagem, se as duas coexistirem */
+  z-index: 8;
   opacity: 0;
   transition: opacity 0.4s ease-out;
 }
@@ -410,71 +403,72 @@ canvas {
 }
 
 #videoShadow video {
-  width: 66vh;      /* igual à imagem */
+  width: 45vh;
   height: auto;
   aspect-ratio: 1/1;
   transform-origin: center center;
-  /* se quiseres, podes aplicar scale aqui via JS no futuro */
 }
 
 
 
 
 
-/* update janeiro 2025*/
 
-#centerContentOverlay{
+#centerContentOverlay {
   color: var(--center-text-color);
 }
 
-#centerContentText{
+#centerContentText {
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--center-text-color);
 }
-#videoShadow .classicCvApertureSvg{
+
+#videoShadow .classicCvApertureSvg {
   width: 66vh;
   height: auto;
   aspect-ratio: 1/1;
   display: none;
 }
 
-#videoShadow.classic-cv-active video{ display:none; }
-#videoShadow.classic-cv-active .classicCvApertureSvg{ display:block; }
-  
+#videoShadow.classic-cv-active video {
+  display: none;
+}
+
+#videoShadow.classic-cv-active .classicCvApertureSvg {
+  display: block;
+}
+
 
 .app-quick-zoom {
   transform: scale(1.4);
   transform-origin: center center;
-  transition: transform 2.6s cubic-bezier(.2,.8,.2,1);
+  transition: transform 2.6s cubic-bezier(.2, .8, .2, 1);
 }
 
 #centerContentText {
   max-width: 45vh;
   max-height: 50vh;
 
-  /* Wrap / quebras de linha */
-  white-space: pre-wrap;     /* respeita quebras e permite wrap */
-  overflow-wrap: anywhere;   /* quebra palavras longas */
-  word-break: break-word;    /* fallback */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 
-  /* Nunca ultrapassar o “quadrado” */
   overflow: hidden;
 
-  /* Centrado */
   text-align: center;
   margin: 0 auto;
 
-  /* Opcional: melhorar legibilidade */
   line-height: 1.35;
 }
 
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
-/* Loading container should mimic the prompt bar size/alignment */
 #promptBarLoading {
   width: 100%;
   display: flex;
@@ -488,8 +482,8 @@ canvas {
   border-radius: 999px;
   overflow: hidden;
 
-  background: var(--loading-track, rgba(255,255,255,0.08));
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+  background: var(--loading-track, rgba(255, 255, 255, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
 }
 
 #promptBarLoading .loadingFill {
@@ -497,6 +491,14 @@ canvas {
   width: 0%;
   border-radius: 999px;
 
-  background: var(--loading-fill, rgba(255,255,255,0.30));
+  background: var(--loading-fill, rgba(255, 255, 255, 0.30));
   transition: width 120ms linear;
+}
+
+#promptBarInner {
+  border-color: var(--promptbar-border-color, var(--bar-border-color));
+}
+
+#controlBarInner {
+  border-color: var(--controlbar-border-color, var(--bar-border-color));
 }

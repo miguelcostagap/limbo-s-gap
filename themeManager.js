@@ -1,4 +1,3 @@
-// themeManager.js
 import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
 
 // basic config + images  mapping
@@ -22,7 +21,13 @@ const THEME_CONFIG = {
     apertureColor: "#a0aa17",
     apertureGradA: "#44444462",
     apertureGradB: "#ced3d669",
-    centerTextColor: "#ced3d6"
+    centerTextColor: "#ced3d6",
+
+    promptBarBorder: "#ced3d6",
+    controlBarBorder: "#ced3d6",
+    buttonRing: "rgba(0, 0, 0, 0.69)",
+    toggleRing: "rgba(255, 255, 255, 0.56)",
+    toggleInner: "rgba(255, 255, 255, 0.86)"
   },
 
   white: {
@@ -43,7 +48,13 @@ const THEME_CONFIG = {
     apertureColor: "#2323aa",
     apertureGradA: "#ced3d669",
     apertureGradB: "#4444447e",
-    centerTextColor: "#444444"
+    centerTextColor: "#444444",
+
+    promptBarBorder: "#444444",
+    controlBarBorder: "#444444",
+    buttonRing: "rgba(0,0,0,0.08)",
+    toggleRing: "rgba(0, 0, 0, 0.77)",
+    toggleInner: "rgb(0, 0, 0)"
   }
 };
 
@@ -116,6 +127,11 @@ export function initThemeManager({ scene, sphere }) {
     // 8) theme variables for loading bar
     document.documentElement.style.setProperty("--loading-track", cfg.loading?.track || "rgba(255,255,255,0.08)");
     document.documentElement.style.setProperty("--loading-fill", cfg.loading?.fill || "rgba(255,255,255,0.30)");
+    document.body.style.setProperty("--promptbar-border-color", cfg.promptBarBorder);
+    document.body.style.setProperty("--controlbar-border-color", cfg.controlBarBorder);
+    document.body.style.setProperty("--button-ring-color", cfg.buttonRing);
+    document.body.style.setProperty("--theme-toggle-ring", cfg.toggleRing);
+    document.body.style.setProperty("--theme-toggle-inner", cfg.toggleInner);
 
   }
 

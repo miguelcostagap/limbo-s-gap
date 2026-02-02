@@ -1,4 +1,3 @@
-// ui/textAnimator.js
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -8,21 +7,14 @@ function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
 }
 
-/**
- * Compute an adaptive delete delay:
- * - Longer sentences => smaller delay => faster deletion
- * - Controlled by baseDeleteDelayMs, min/max, and power.
- */
 function computeDeleteDelayMs(len, opts) {
-  const minD = opts.minDeleteDelayMs ?? 0;     // permite quase 0ms (mas vamos clamp abaixo)
-  const maxD = opts.maxDeleteDelayMs ?? 6;     // evita ficar lento em frases curtas
+  const minD = opts.minDeleteDelayMs ?? 0;     
+  const maxD = opts.maxDeleteDelayMs ?? 6;     
 
-  // target total delete time per sentence (ms) — turbo
-  const targetTotalMs = opts.deleteTotalMs ?? 90; // 60–120 é “quase instantâneo”
+  const targetTotalMs = opts.deleteTotalMs ?? 90; 
 
   const perChar = targetTotalMs / Math.max(1, len);
 
-  // clamp: nunca menos de 1ms para não bloquear o event loop com loops apertados
   return clamp(perChar, 1, maxD);
 }
 
@@ -48,7 +40,7 @@ export function createTextAnimator(textEl) {
     const betweenSentenceMs = opts.betweenSentenceMs ?? 120;
     const cursorBlinkMs = opts.cursorBlinkMs ?? 420;
 
-    // Cursor blinker loop
+    // Cursor blinker 
     (async () => {
       while (id === runId) {
         cursorOn = !cursorOn;
@@ -75,25 +67,22 @@ export function createTextAnimator(textEl) {
         await sleep(typeDelayMs);
       }
 
-      // NEW: lag before deleting
       await sleep(preDeleteLagMs);
 
-      // DELETE (turbo) — delete multiple chars per tick
-      const perTickDelayMs = opts.deleteDelayMs ?? 1;     // usa a tua config existente
-      const chunkSize = opts.deleteChunkSize ?? 12;       // 12 chars por tick (muito rápido)
+      // DELETE (turbo)
+      const perTickDelayMs = opts.deleteDelayMs ?? 1;     // use config|||
+      const chunkSize = opts.deleteChunkSize ?? 12;       
 
       while (current.length > 0) {
         if (id !== runId) return;
         current = current.slice(0, Math.max(0, current.length - chunkSize));
         setTextWithCursor(current);
 
-        // Se queres ainda mais instantâneo: mete 0 e usa requestAnimationFrame (ver abaixo)
         await sleep(perTickDelayMs);
       }
 
     }
 
-    // End: clear everything
     textEl.textContent = "";
   }
 

@@ -74,8 +74,8 @@ const promptBarIcon = document.getElementById("promptBarIcon");
 const promptBarIconImage = document.getElementById("promptBarIconImage");
 
 const themeToggleButton = document.getElementById("themeToggleButton");
-// When a quick action is running we temporarily hide the entire prompt UI.
-// Once the app returns to idle (and the video overlay is gone), we restore
+// When a quick action is running temporarily hide the entire prompt UI
+// Once the app returns to idle (and the video overlay is gone),restore
 // the initial UI state (control bar visible).
 let uiAutoRestorePending = false;
 const videoShadowOverlay = document.getElementById("videoShadow");
@@ -172,7 +172,7 @@ const classicCvPortal = initClassicCvAperturePortal({
     spinDegTotal: 170
   }
 });
-// Control bar → videos + magnet 
+// Control bar ---> videos ---Z magnet 
 initControlBarVideos({
   onTriggerPrompt: (label) => {
         enterQuickActionMode();
@@ -236,13 +236,12 @@ imageShadowController.update(
  
   // Auto-restore UI after a quick action: only when we're back to idle AND
   // the video portal is no longer visible.
-// Auto-restore quando volta ao controlo normal do rato (magnet real)
+// Auto-restore 
 if (uiAutoRestorePending) {
-  const mouseBackToNormal = !promptState.virtualMouseNDC; // aqui está o teu sinal do magnet
+  const mouseBackToNormal = !promptState.virtualMouseNDC; 
 
-  // opcional: também exigir idle para evitar flicker
   if (mouseBackToNormal && promptState.phase === "idle") {
-    showControlBar();          // estado inicial
+    showControlBar();        
     uiAutoRestorePending = false;
     if (appRoot) appRoot.classList.remove("app-quick-zoom");
 

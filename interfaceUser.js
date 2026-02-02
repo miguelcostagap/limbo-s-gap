@@ -1,5 +1,3 @@
-// interfaceUser.js
-
 export function initUserInterface(renderer, camera, onMouseNDCChange, onResize) {
   const dom = renderer.domElement;
 

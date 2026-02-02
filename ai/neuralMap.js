@@ -1,6 +1,6 @@
-// ai/neuralMap.js
-// Lightweight "neural map" (a semantic graph of Miguel's facts).
-// GPT will map user prompts to these nodes and use the facts to answer in Miguel's voice.
+
+// Lightweight "neural map"
+// GPT maps user prompts to these nodes and use the facts to answer
 
 export const NEURAL_MAP = {
     version: "1.0",

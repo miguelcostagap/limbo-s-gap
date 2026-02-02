@@ -1,4 +1,3 @@
-// sphereConfigControlPanel.js
 
 export const SPHERE_CONFIG = {
 
@@ -6,64 +5,63 @@ export const SPHERE_CONFIG = {
   //new to be iplemented (here for now new file after)...
 
   // GPT PROXY (Cloudflare Worker)
-gptProxyEndpoint: "https://miguel-gpt-proxy.miguelcostagap.workers.dev/api/chat",
-gptModel: "gpt-5-mini-2025-08-07",
-gptWarmupEnabled: true,
+  gptProxyEndpoint: "https://miguel-gpt-proxy.miguelcostagap.workers.dev/api/chat",
+  gptModel: "gpt-4.1-mini-2025-05-29",
+  gptWarmupEnabled: true,
 
-// Dialog timings
-dialogInDurationMs: 900,
-dialogOutDurationMs: 900,
-dialogMinHoldMs: 1000,
+  // Dialog timings
+  dialogInDurationMs: 900,
+  dialogOutDurationMs: 900,
+  dialogMinHoldMs: 1000,
 
-// Text animation
-dialogTypeDelayMs: 22,
-dialogDeleteDelayMs: 1,
-dialogSentenceHoldMs: 300,
-dialogBetweenSentenceMs: 3000,
-dialogCursorBlinkMs: 420,
+  // Text animation
+  dialogTypeDelayMs: 22,
+  dialogDeleteDelayMs: 1,
+  dialogSentenceHoldMs: 300,
+  dialogBetweenSentenceMs: 3000,
+  dialogCursorBlinkMs: 420,
 
-  // tamanho da esfera
+  // size
   sphereRadius: 60,
 
-  // quantidade de pontos (antes de cortar a meia-esfera)
+  // doys
   totalPoints: 200000,
 
-  // tamanho visual dos pontos
+  // dot's size
   pointSize: 0.6,
 
-  // --- ÁREA AFETADA (campo magnético global) ---
-  areaConeAngle: 0.9,           // ~50º da esfera
+  // aftected area of sphere
+  areaConeAngle: 0.9,        
   numSubSpikes: 6,
   subSpikeConeAngle: 0.28,
   spikeLocalPower: 2.8,
 
-  // alturas mínima/máxima dos spikes (modo magnet)
-  spikeMinHeight: 4,
+  // min max (modo magnet)
+  spikeMinHeight: 0,
   spikeMaxHeight: 102,
 
-  // escala global dos spikes
+  // global scale
   spikeSizeRatio: 1.1,
 
-  // velocidades das ondas (modo magnet)
+  // magnet waves speed (modo magnet)
   spikeOscSpeed1: 0.5,
   spikeOscSpeed2: 0.2,
 
-  // quanto de “noise” vs movimento suave
+  //  “noise” vs smooth movement
   spikeNoiseAmount: 0.7,
 
-  // intensidade máxima global
+  // max intensity
   spikeMaxIntensity: 1.0,
 
-  // easing da intensidade (fade-in / fade-out)
+  // easing  (fade-in / fade-out)
   spikeEasing: 0.03,
 
-  // decay extra (suaviza fade-out)
+  // extra decay  (smooth fade-out)
   spikeDecay: 0.096,
 
-  // quão rápido a direção visual do campo segue o rato (drag)
+  // (drag sppeed)
   magnetFollowEasing: 0.12,
 
-  // fração extra do raio projetado em que o campo já começa
   magnetExtraRadiusFactor: 1.8,
 
   // --- HOLLOW (PROMPT / PORTAL FORTE) ---
@@ -77,29 +75,28 @@ dialogCursorBlinkMs: 420,
   // DIALOG / STATIC SPIKES
   // ───────────────────────
 
-  // tempo de leitura: segundos por caractere da resposta
+  // reading time per char of response (gpt not user)
   dialogSecondsPerChar: 0.08,
 
-  // envelope temporal (0→1→0)
   dialogInDurationMs: 900,
   dialogOutDurationMs: 900,
   dialogMinHoldMs: 2000,
 
   // “mini-magnets” ao redor da esfera
-  dialogNumSpikes: 32,       // quantos cones locais ativos
-  dialogConeAngle: 0.35,     // abertura do cone
-  dialogLocalPower: 2.2,     // quão rápido cai dentro do cone
+  dialogNumSpikes: 35,       // quantity cones
+  dialogConeAngle: 0.35,     // radius 
+  dialogLocalPower: 2.2,     // speed
 
-  // alturas dos spikes em modo diálogo
-  dialogSpikeMinHeight: 3,
-  dialogSpikeMaxHeight: 28,
+  // min max heights
+  dialogSpikeMinHeight: 0,
+  dialogSpikeMaxHeight: 48,
 
-  // movimento dos spikes em modo diálogo
+  // movement of spikes in dialog
   dialogWaveSpeed1: 0.45,
   dialogWaveSpeed2: 0.18,
-  dialogNoiseAmount: 0.7,
-    dialogRingInnerAngle: 0.95,  // interior do anel (zona central calma)
-  dialogRingOuterAngle: 1.52
+  dialogNoiseAmount: 0.2,
+  dialogRingInnerAngle: 0.95, 
+  dialogRingOuterAngle: 2.52
 };
 
 export function initSphereConfigPanel() {
@@ -306,7 +303,7 @@ export function initSphereConfigPanel() {
           max: 1.0,
           step: 0.05
         },
-           {
+        {
           key: "dialogRingInnerAngle",
           label: "Ring inner angle",
           min: 0.0,

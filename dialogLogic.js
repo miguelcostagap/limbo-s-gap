@@ -1,4 +1,3 @@
-// dialogLogic.js
 import { SPHERE_CONFIG as CONFIG } from "./sphereConfigControlPanel.js";
 import { createVirtualMiguel } from "./ai/virtualMiguel.js";
 import { createPromptLoadingController } from "./promptLoading.js";

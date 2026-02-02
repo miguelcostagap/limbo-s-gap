@@ -1,4 +1,3 @@
-// promptControl.js
 import { SPHERE_CONFIG as CONFIG } from "./sphereConfigControlPanel.js";
 
 const Phase = {
@@ -39,22 +38,47 @@ export function initPromptControl(getMouseNDC) {
   let dialogMinHold = CONFIG.dialogMinHoldMs;
   let dialogHoldEnd = 0;
 
-  // ---------- CONTROL BAR (videos) ----------
-  function triggerPrompt(text) {
+  let promptTransitionDurationMs = CONFIG.promptTransitionDurationMs;
+  let hollowDurationMs = CONFIG.hollowDurationMs;
+  let hollowEasing = CONFIG.hollowEasing;
+
+  function triggerPrompt(text, opts = {}) {
     const mouse = getMouseNDC ? getMouseNDC() : { x: 0, y: 0 };
 
+    // SHOW overlay/texto
     if (text) {
       overlayText.textContent = text;
       overlay.classList.add("visible");
     }
 
+  
     transitionFromMouse = { x: mouse.x, y: mouse.y };
     virtualMouse = { x: mouse.x, y: mouse.y };
     transitionStartTime = performance.now();
 
-    phase = Phase.Transition;
+    // Defaults 
+    promptTransitionDurationMs = CONFIG.promptTransitionDurationMs;
+    hollowDurationMs = CONFIG.hollowDurationMs;
+    hollowEasing = CONFIG.hollowEasing;
+
+    // Overrides por botão (se vierem)
+    if (typeof opts.transitionDurationMs === "number") {
+      promptTransitionDurationMs = Math.max(0, opts.transitionDurationMs);
+    }
+    if (typeof opts.hollowDurationMs === "number") {
+      hollowDurationMs = Math.max(0, opts.hollowDurationMs);
+    }
+    if (typeof opts.hollowEasing === "number") {
+      hollowEasing = clamp01(opts.hollowEasing);
+    }
+
+    // GET normal fluxo  from prompt control
     mode = "control";
+    phase = Phase.Transition;
+
+    // Reset do hollow
     hollowTarget = 0;
+    // hollowFactor = 0;
   }
 
   // ---------- DIALOG (text input / AI) ----------
@@ -65,7 +89,7 @@ export function initPromptControl(getMouseNDC) {
     overlay.classList.add("visible");
 
     mode = "dialog";
-    phase = Phase.Hollow; // KEEP IT hollow for imageShadowControl
+    phase = Phase.Hollow; 
 
     dialogInDuration = CONFIG.dialogInDurationMs;
     dialogOutDuration = CONFIG.dialogOutDurationMs;

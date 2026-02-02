@@ -1,21 +1,10 @@
-// classicCvAperture.js
-// ------------------------------------------------------------
-// Substitui o vídeo do quick action "classic cv" por uma animação SVG
-// (aperture/iris) dentro do portal #videoShadow.
-// - Sem background (transparente).
-// - 1 execução: fechado -> abre (a rodar) -> fecha -> pára.
-// - Cor por CSS vars (Theme Manager):
-//     --aperture-color      (lâminas)
-//     --center-text-color   (texto)
-// ------------------------------------------------------------
-
 const DEFAULTS = {
   blades: 6,
   durationMs: 3200,
   spinDegTotal: 370,
   outerRadius: 115,
 
-  // Estados densificados (transição mais “mecânica” / suave)
+  // ignore it is going to be deleted - replaced by video.....
   states: [
     { rIn: 10, w: 0.995, twist: 0.95, shear: 0.62 },
     { rIn: 14, w: 0.985, twist: 0.92, shear: 0.60 },
@@ -64,7 +53,6 @@ export function initClassicCvAperturePortal({
     return { playOnce: async () => { }, stop: () => { } };
   }
 
-  // cria SVG 1x e mantém no DOM
   const svg = ensureSvg(overlay, cfg.blades);
   const group = svg.querySelector("#apertureGroup");
   const blades = Array.from(svg.querySelectorAll("path.classicCvBlade"));
@@ -87,11 +75,9 @@ export function initClassicCvAperturePortal({
   async function playOnce({ showOverlay, hideOverlay } = {}) {
     stop();
 
-    // 1) mostra overlay
     if (typeof showOverlay === "function") showOverlay();
     else overlay.classList.add("visible");
 
-    // 2) activa modo classic-cv (esconde vídeo, mostra SVG)
     overlay.classList.add("classic-cv-active");
     if (videoEl) {
       videoEl.pause?.();
@@ -99,14 +85,10 @@ export function initClassicCvAperturePortal({
       try { videoEl.load(); } catch (_) { }
       videoEl.style.display = "none";
     }
-
-    // 3) texto central
     if (centerText) centerText.textContent = textWhileDownloading;
     if (centerOverlay) centerOverlay.classList.add("visible");
 
-    // 4) download (no gesto do click)
 
-    // 5) animação 1x
     isRunning = true;
     const start = performance.now();
 
@@ -135,7 +117,6 @@ export function initClassicCvAperturePortal({
 
     isRunning = false;
 
-    // 6) fechar UI
     setTimeout(() => {
       if (typeof hideOverlay === "function") hideOverlay();
       else overlay.classList.remove("visible");
@@ -152,7 +133,6 @@ export function initClassicCvAperturePortal({
   return { playOnce, stop };
 }
 
-// ---------- SVG creation ----------
 function ensureSvg(containerEl, bladesCount = 6) {
   let svg = containerEl.querySelector("svg.classicCvApertureSvg");
   if (svg) return svg;
@@ -162,7 +142,6 @@ function ensureSvg(containerEl, bladesCount = 6) {
   svg.setAttribute("viewBox", "-120 -120 240 240");
   svg.setAttribute("aria-label", "Classic CV aperture");
 
-  // --- defs: gradient (required) ---
   const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
 
   const grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
@@ -185,12 +164,9 @@ function ensureSvg(containerEl, bladesCount = 6) {
   defs.appendChild(grad);
   svg.appendChild(defs);
 
-  // --- group that rotates ---
   const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
   g.setAttribute("id", "apertureGroup");
   svg.appendChild(g);
-
-  // --- blade style uses gradient (fallback to solid if needed) ---
   const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
   style.textContent = `
     .classicCvBlade{ fill: url(#apertureGradient); }
@@ -208,9 +184,6 @@ function ensureSvg(containerEl, bladesCount = 6) {
   containerEl.appendChild(svg);
   return svg;
 }
-
-
-// ---------- Geometry helpers ----------
 function bladePath(i, N, rOut, P) {
   const TAU = Math.PI * 2;
   const step = TAU / N;
@@ -273,7 +246,6 @@ function easeInOutCubic(x) {
 }
 
 async function triggerDownload(url, filename) {
-  // Must be called directly from the click handler chain to avoid popup-blockers.
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`Download failed: ${res.status}`);
   const blob = await res.blob();
@@ -287,7 +259,6 @@ async function triggerDownload(url, filename) {
   a.click();
   a.remove();
 
-  // cleanup
   setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
 

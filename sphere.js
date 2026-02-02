@@ -1,4 +1,3 @@
-// sphere.js
 import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
 import { SPHERE_CONFIG as CONFIG } from "./sphereConfigControlPanel.js";
 
@@ -54,7 +53,7 @@ export class MagneticSphere {
     }
   }
 
-  // ---------- API pública ----------
+  // ---------- API  ----------
 
   setMouseNDC(x, y) {
     this.mouseNDC.set(x, y);
@@ -67,7 +66,6 @@ export class MagneticSphere {
     let proximity = 0;
 
     if (!dialogMode) {
-      // comportamento normal com magnet
       proximity = this._updateMagnetDirection(time, enableMagnet);
 
       if (enableMagnet) {
@@ -90,13 +88,11 @@ export class MagneticSphere {
         this._maybeRespawnSubSpikes(time);
       }
     } else {
-      // MODO DIALOG: magnet local desligado
       this.targetSpikeIntensity = 0;
       this.currentSpikeIntensity +=
         (0 - this.currentSpikeIntensity) * this.config.spikeEasing;
       this.magnetActive = false;
 
-      // gerir os "mini-magnets" do modo diálogo
       if (this.dialogSpikes.length === 0) {
         this._initDialogSpikes(time);
       } else {
@@ -114,7 +110,6 @@ export class MagneticSphere {
 
   }
 
-  // ---------- Internos ----------
 
   _buildPointSphere() {
     const R = this.R;
@@ -129,7 +124,7 @@ export class MagneticSphere {
       const y = Math.sin(theta) * Math.sin(phi);
       const z = Math.cos(phi);
 
-      if (z < 0) continue; // só hemisfério frontal
+      if (z < 0) continue; 
 
       const dir = new THREE.Vector3(x, y, z).normalize();
       this.baseDirections.push(dir);
@@ -284,7 +279,7 @@ export class MagneticSphere {
     return proximity;
   }
 
-  // ---------- SubSpikes (modo magnet) ----------
+  // ---------- SubSpikes (magnet) ----------
 
   _initSubSpikes(time) {
     this.subSpikes.length = 0;
@@ -338,7 +333,7 @@ export class MagneticSphere {
     return dir.normalize();
   }
 
-  // ---------- Dialog Spikes (modo AI static) ----------
+  // ---------- Dialog Spikes ( AI static) ----------
 
   _initDialogSpikes(time) {
     this.dialogSpikes.length = 0;
@@ -350,7 +345,6 @@ export class MagneticSphere {
   }
 
   _createDialogSpike(time) {
-    // direção aleatória na meia-esfera frontal
     let dir = new THREE.Vector3(
       Math.random() * 2 - 1,
       Math.random() * 2 - 1,
@@ -360,7 +354,7 @@ export class MagneticSphere {
     dir.normalize();
     if (dir.z < 0) dir.z *= -1;
 
-    const life = THREE.MathUtils.lerp(1.2, 3.4, Math.random()); // em segundos
+    const life = THREE.MathUtils.lerp(1.2, 3.4, Math.random()); 
     const phase = Math.random() * Math.PI * 2;
 
     return {
@@ -388,7 +382,7 @@ export class MagneticSphere {
     }
   }
 
-  // ---------- Atualização dos pontos ----------
+  // ---------- update dots ----------
 
   _updatePointsBuffers(time, hollowFactor) {
 
@@ -422,7 +416,7 @@ export class MagneticSphere {
     const dSpeed1 = this.config.dialogWaveSpeed1;
     const dSpeed2 = this.config.dialogWaveSpeed2;
     const dNoise = this.config.dialogNoiseAmount;
-    // 🔔 ring zone em torno do centro
+    // ring zone 
     const ringInner = this.config.dialogRingInnerAngle || 0.0;
     const ringOuter = this.config.dialogRingOuterAngle || 1.0;
     const forward = new THREE.Vector3(0, 0, 1);
@@ -438,7 +432,7 @@ export class MagneticSphere {
       sphereRadiusPxLike * this.config.hollowScreenRadiusFactor;
     // antes do for(...)
     const camFwd = new THREE.Vector3();
-    this.camera.getWorldDirection(camFwd); // direção para onde a câmara "olha"
+    this.camera.getWorldDirection(camFwd); 
     const hiddenPos = new THREE.Vector3()
       .copy(this.camera.position)
       .addScaledVector(camFwd, 1000);
@@ -451,15 +445,12 @@ export class MagneticSphere {
       if (dialogMode) {
         const intensity = THREE.MathUtils.clamp(hollowFactor, 0, 1);
 
-        // detectar saída (refill) quando a intensidade começa a descer
         const isRefill = intensity < (this._lastDialogIntensity - 1e-4);
-        const refillProgress = isRefill ? (1 - intensity) : 0; // 0→1 durante saída
+        const refillProgress = isRefill ? (1 - intensity) : 0; 
 
-        // suavidade da frente de refill (0.05..0.15)
         const refillFeather = 0.10;
 
-        // spikes: fade-out no início do refill (evita corte brusco)
-        // 0..spikeFadeOutPortion => decai de 1 para 0
+   
         const spikeFadeOutPortion = 0.18;
 
         const smoothstep = (e0, e1, x) => {
@@ -467,23 +458,20 @@ export class MagneticSphere {
           return t * t * (3 - 2 * t);
         };
 
-        // 1 quando não é refill; durante refill cai para 0 nos primeiros ~18%
         const spikeFade = isRefill
           ? (1 - smoothstep(0, spikeFadeOutPortion, refillProgress))
           : 1;
 
-        const angleCenter = dir.angleTo(forward); // 0 no centro, ~PI/2 na borda
+        const angleCenter = dir.angleTo(forward); 
 
-        // ---------- CENTRO (<= ringInner) ----------
-        // Em vez de "esconder para fora do ecrã", empurra para a linha ringInner na esfera
+        // ---------- center (<= ringInner) ----------
         if (angleCenter <= ringInner) {
-          // base normal (no sítio)
           const bx = dir.x * this.R;
           const by = dir.y * this.R;
           const bz = dir.z * this.R;
 
           // construir direção no ringInner mantendo azimute:
-          // vecXY define o azimute (theta). Se estiver mesmo no centro, escolhe um theta qualquer.
+          // vecXY defines azimute (theta).if in center, chose random theta
           const lenXY = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
           let ux = 1, uy = 0;
           if (lenXY > 1e-6) {
@@ -494,22 +482,20 @@ export class MagneticSphere {
           const sinPhi = Math.sin(ringInner);
           const cosPhi = Math.cos(ringInner);
 
-          // target na circunferência interna do anel, na esfera
+          // target in ring's inside circle
           const tx = ux * sinPhi * this.R;
           const ty = uy * sinPhi * this.R;
           const tz = cosPhi * this.R;
 
-          // refill outside-in: ringInner aparece primeiro, centro por último
+          // refill outside-in: ringInner first, center last
           const t = THREE.MathUtils.clamp(angleCenter / ringInner, 0, 1); // 0..1
-          const threshold = 1 - t; // ringInner -> 0 ; centro -> 1
+          const threshold = 1 - t; 
 
-          // durante dialog (não refill), mantém no ringInner (reveal=0)
-          // durante refill, revela ringInner -> base
           const reveal = isRefill
             ? smoothstep(threshold - refillFeather, threshold + refillFeather, refillProgress)
             : 0;
 
-          // lerp ringInner -> base (isto faz “vir da esfera”, não do ecrã)
+          // lerp ringInner -> base (comes from shpere, bot screen like before....)
           posArray[baseIndex] = tx + (bx - tx) * reveal;
           posArray[baseIndex + 1] = ty + (by - ty) * reveal;
           posArray[baseIndex + 2] = tz + (bz - tz) * reveal;
@@ -517,14 +503,13 @@ export class MagneticSphere {
           continue;
         }
 
-        // ---------- FORA DO CENTRO ----------
-        // spikes só na ring zone e com spikeFade (para morrer suave no refill)
+        // ---------- Out of boundaries ----------
+        // spikes only in ring zone with spikeFade 
         let ringWeight = 0;
         if (angleCenter < ringOuter) {
           const tRing = (angleCenter - ringInner) / (ringOuter - ringInner);
           const tClamped = THREE.MathUtils.clamp(tRing, 0, 1);
 
-          // se queres energia mais colada à borda: ringWeight = Math.pow(tClamped, 1.8);
           ringWeight = Math.sin(tClamped * Math.PI); // 0→1→0
         }
 
@@ -570,7 +555,7 @@ export class MagneticSphere {
               const baseHeight = dMin + (dMax - dMin) * localIntensity;
               const mixNoise = (1 - dNoise) * 1.0 + dNoise * oscNorm;
 
-              // 🔑 spikeFade mata spikes suavemente durante refill
+              // spikeFade
               spikeOffset = baseHeight * mixNoise * bestEnvelope * spikeFade;
             } else {
               spikeOffset = 0;
@@ -582,7 +567,7 @@ export class MagneticSphere {
       }
 
       else if (this.currentSpikeIntensity > 0.001 && this.magnetActive) {
-        // 🔥 COMPORTAMENTO MAGNET ANTIGO (local em volta do rato)
+        // COMPORTAMENTO MAGNET 
         let bestLocal = 0;
         let bestSpikeEnvelope = 0;
 
@@ -648,7 +633,7 @@ export class MagneticSphere {
         }
       }
 
-      // HOLLOW GEOMÉTRICO: só no modo "control"
+      // HOLLOW 
       let hollowOffset = 0;
       if (!dialogMode && hollowFactor > 0.001) {
         projected.set(dir.x * this.R, dir.y * this.R, dir.z * this.R);

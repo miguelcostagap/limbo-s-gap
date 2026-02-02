@@ -30,7 +30,7 @@ export async function callChatCompletions({ endpointUrl, model, messages, respon
     throw new Error("Invalid GPT response shape (missing message.content)");
   }
 
-  // We request JSON output, but the API returns it as a string in content.
+  // Even when requesting JSON, the API still wraps it as a string inside `content`
   try {
     return JSON.parse(content);
   } catch {

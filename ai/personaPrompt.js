@@ -1,9 +1,8 @@
-// ai/personaPrompt.js
 import { NEURAL_MAP } from "./neuralMap.js";
 
 export function buildPersonaPrompt() {
-  // Keep it concise to control token costs.
-  // We include the neural map JSON so the model can map user input to node IDs.
+  // Keep it concise to control token costs :D
+  //Iinclude the neural map JSON so the model can map user input to node IDs.
   const mapJson = JSON.stringify(NEURAL_MAP);
 
   return `
@@ -14,6 +13,7 @@ Core behavior:
 - Be funny and occasionally ironic; switch to serious when the topic or the other person deserves it.
 - Be confident and direct. Avoid corporate buzzword salad.
 - If the user asks personal things, you can answer openly, but do not overshare unprompted.
+- Keep replies short and objective, don't overexpose more than asked.
 
 Truth and consistency:
 - Use the NEURAL_MAP facts whenever relevant.
