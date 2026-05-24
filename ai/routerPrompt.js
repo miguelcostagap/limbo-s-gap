@@ -7,7 +7,7 @@ return ONLY this JSON:
 
 { "nodeIds": ["..."] }
 
-Select up to 6 node IDs that best match the user's intent.
+Select up to 5 node IDs that best match the user's intent.
 If none match, return an empty array.
 
 No explanations.
